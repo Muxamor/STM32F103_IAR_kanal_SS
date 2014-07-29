@@ -1001,7 +1001,7 @@
         <option>
           <name>CEmuCommPort</name>
           <version>0</version>
-          <state>0</state>
+          <state>4</state>
         </option>
         <option>
           <name>jtago</name>
@@ -1205,7 +1205,7 @@
         </option>
         <option>
           <name>CCSwoClockEdit</name>
-          <state>2000</state>
+          <state>32</state>
         </option>
       </data>
     </settings>
@@ -1218,7 +1218,7 @@
         <debug>1</debug>
         <option>
           <name>CThirdPartyDriverDll</name>
-          <state>Browse to your third-party driver</state>
+          <state>###Uninitialized###</state>
         </option>
         <option>
           <name>CThirdPartyLogFileCheck</name>
@@ -1434,7 +1434,7 @@
         </option>
         <option>
           <name>OCLastSavedByProductVersion</name>
-          <state>7.20.2.7418</state>
+          <state></state>
         </option>
         <option>
           <name>OCDownloadAttachToProgram</name>
@@ -1462,7 +1462,7 @@
         </option>
         <option>
           <name>FlashLoadersV3</name>
-          <state>$TOOLKIT_DIR$\config\flashloader\</state>
+          <state></state>
         </option>
         <option>
           <name>OCImagesSuppressCheck1</name>

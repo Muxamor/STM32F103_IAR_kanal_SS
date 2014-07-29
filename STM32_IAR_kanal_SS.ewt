@@ -183,6 +183,27 @@
     </file>
   </group>
   <group>
+    <name>FunctionPeriph</name>
+    <group>
+      <name>inc</name>
+      <file>
+        <name>$PROJ_DIR$\FunctionPeriph\inc\delay_systick.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\FunctionPeriph\inc\usart_fn.h</name>
+      </file>
+    </group>
+    <group>
+      <name>src</name>
+      <file>
+        <name>$PROJ_DIR$\FunctionPeriph\src\delay_systick.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\FunctionPeriph\src\usart_fn.c</name>
+      </file>
+    </group>
+  </group>
+  <group>
     <name>StdPeriph</name>
     <group>
       <name>inc</name>
@@ -331,6 +352,12 @@
   </group>
   <file>
     <name>$PROJ_DIR$\main.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\SetupPeriph\SetupPeriphSS.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\stm32f10x_it.c</name>
   </file>
 </project>
 
