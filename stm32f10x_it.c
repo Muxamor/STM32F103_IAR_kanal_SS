@@ -23,8 +23,14 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
+#include "structure.h"  
+#include "usart_fn.h"
+#include "SPI_fn.h"
+#include "SetupPeriphSS.h"
 
-#include  "delay_systick.h"
+#include "delay_systick.h"
+    
+
 
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -136,10 +142,66 @@ void PendSV_Handler(void)
   */
 
 void SysTick_Handler(void){
-  
+ 
   delay_counter_down();
   
 }
+
+extern _INTERRUPTMONITOR *Interrupt_Monitor;
+extern _SETTINGSOFCHANNEL  *Settings_Of_Channel;
+
+/**
+  * @brief  This function handles  RTC evry one second interrupt request.
+  * @param  None
+  * @retval None
+  */
+void RTC_IRQHandler(void){
+  
+  if( RTC_GetITStatus(RTC_IT_SEC) != RESET ){
+       
+
+      if(Settings_Of_Channel->time_test_LED==0) {
+      LED_GREEN_ON();
+      Settings_Of_Channel->time_test_LED=1;
+      } else {
+      LED_GREEN_OFF();
+      Settings_Of_Channel->time_test_LED=0;
+      
+       }
+    
+    
+       
+    RTC_ClearITPendingBit(RTC_IT_SEC);
+    RTC_WaitForLastTask();
+  }
+}
+
+
+
+/**
+  * @brief  This function handles  PB0 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI0_IRQHandler(void){
+  
+  if( EXTI_GetITStatus(EXTI_Line0) != RESET ){
+    
+    if(Settings_Of_Channel->Freq_sampling_count_down_for_UART==0){
+      Interrupt_Monitor->ADC_AD17_data_ready_interrupt=1;
+      Settings_Of_Channel->Freq_sampling_count_down_for_UART=Settings_Of_Channel->Frequency_sampling_count_for_UART;
+    }else{
+      Settings_Of_Channel->Freq_sampling_count_down_for_UART--;
+    }
+   
+    
+  }
+  EXTI_ClearITPendingBit(EXTI_Line0);
+}
+
+
+extern _UARTBUF *UART_Buf;
+
 
 /**
   * @brief  This function handles  UART4 interrupt request.
@@ -148,12 +210,79 @@ void SysTick_Handler(void){
   */
 void UART4_IRQHandler(void){
   
+  u8 tmp;
+
+ 
   if(USART_GetITStatus(UART4, USART_IT_RXNE)){
     USART_ClearITPendingBit(UART4,  USART_IT_RXNE );
-    USART_SendData(UART4,  USART_ReceiveData(UART4));
+    tmp=USART_ReceiveData(UART4);
+    UART_Buf->UART_Recive_Buf[UART_Buf->UART_Buf_Len]=tmp;
+    
+    if(tmp=='\r'){
+      Interrupt_Monitor->UART_Interrup=1;
+      UART_Buf->UART_Recive_Buf[UART_Buf->UART_Buf_Len]=' ';
+        
+    }else{
+      if(tmp==0x7f){
+        if(UART_Buf->UART_Buf_Len!=0){
+          UART_Buf->UART_Buf_Len--;
+          UART_Buf->UART_Recive_Buf[UART_Buf->UART_Buf_Len]=' ';
+          UART_SendBite(UART4, 127); // 127 is delet command for terminal
+        }
+      }else{
+        UART_Buf->UART_Buf_Len++;
+        UART_SendBite(UART4, tmp);
+      }
+    }
+    
+    if(UART_Buf->UART_Buf_Len>(SIZE_UART_BUF-1)){
+      UART_Buf->UART_Buf_Len=(SIZE_UART_BUF-1);
+      UART_SendBite(UART4, 127);
+    }
+    
   }
-  
+      
 }
+
+extern _SPI3RECIVEBUF *SPI3_Recive_Buf;
+
+/**
+  * @brief  This function handles SPI3 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void SPI3_IRQHandler(void){
+  
+   if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_TXE)==SET){
+     ///буфер передачи пусть возможнапосылка следующего пакета
+    
+     Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
+     SPI_Send_Data_u16(SPI3,0x0000);// For clear a interrupt flag TXE
+     SPI3_INT_BB_OFF();
+    
+   }else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_RXNE)==SET){
+     
+     SPI3_Recive_Buf->SPI3_Recive_Buf[SPI3_Recive_Buf->SPI3_Buf_Len]=SPI_Receive_Data(SPI3);
+     
+     SPI3_Recive_Buf->SPI3_Buf_Len++;
+     
+     if( SPI3_Recive_Buf->SPI3_Buf_Len==2){
+       SPI3_Recive_Buf->SPI3_Buf_Len=0;
+       Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=1; // Recive parsel
+     }
+     LED_RED_ON();
+     
+      
+   }else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_ERR)==SET){
+     ///Произошла ошибка
+     Interrupt_Monitor-> SPI3_Interrup_ERROR_Occurred=1;
+     
+   }
+     
+   
+}
+
+
 
 
 

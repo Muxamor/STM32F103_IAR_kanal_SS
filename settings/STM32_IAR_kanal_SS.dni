@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=140258940
+Checksum=-1289938876
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -34,17 +34,21 @@ ITMportsEnable=0
 ITMportsTermIO=0
 ITMportsLogFile=0
 ITMlogFile=$PROJ_DIR$\ITM.log
-[Interrupts]
-Enabled=1
-[MemConfig]
-Base=1
-Manual=0
-Ddf=1
-TypeViol=0
-Stop=1
-[Simulator]
-Freq=10000000
-MultiCoreRunAll=1
+[CodeCoverage]
+Enabled=_ 0
+[struct_types]
+Fmt0=_UARTBUF-UART_Buf_Len	3	0
+[array_types]
+Fmt0=u8[25]	3	0
+[watch_formats]
+Fmt0={W}1:Settings_Of_Channel->Freq_sampling_count_down	3	0
+Fmt1={W}1:data1	1	0
+Fmt2={W}1:data2	1	0
+Fmt3={W}1:data3	1	0
+Fmt4={W}1:i	3	0
+Fmt5={W}1:priority	1	0
+Fmt6={W}1:test	4	0
+Fmt7={W}1:tmp	3	0
 [SWOTraceWindow]
 PcSampling=0
 InterruptLogs=0
@@ -54,22 +58,6 @@ EventEXC=0
 EventFOLD=0
 EventLSU=0
 EventSLEEP=0
-[DataLog]
-LogEnabled=0
-SumEnabled=0
-GraphEnabled=0
-ShowTimeLog=1
-ShowTimeSum=1
-[InterruptLog]
-LogEnabled=0
-SumEnabled=0
-GraphEnabled=0
-ShowTimeLog=1
-ShowTimeSum=1
-SumSortOrder=0
-[watch_formats]
-Fmt0={W}1:i	3	0
-Fmt1={W}1:priority	1	0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -81,15 +69,41 @@ LogFile=_ ""
 Enabled=0
 [DriverProfiling]
 Enabled=0
-Mode=0
+Mode=3
 Graph=0
 Symbiont=0
 Exclusions=
+[InterruptLog]
+LogEnabled=0
+SumEnabled=0
+GraphEnabled=0
+ShowTimeLog=1
+ShowTimeSum=1
+SumSortOrder=0
+[DataLog]
+LogEnabled=0
+SumEnabled=0
+GraphEnabled=0
+ShowTimeLog=1
+ShowTimeSum=1
+[Interrupts]
+Enabled=1
+[MemConfig]
+Base=1
+Manual=0
+Ddf=1
+TypeViol=0
+Stop=1
+[Simulator]
+Freq=10000000
+MultiCoreRunAll=1
 [Disassemble mode]
 mode=0
 [Breakpoints2]
-Bp0=_ 1 "EMUL_DATA" "UART_SendBite" 0 0 0 0 4294967295
-Count=1
-[Aliases]
 Count=0
+[Aliases]
+A0=_ "C:\Working\KTIVT\STM32\STM32_IAR_kanal_SS\STM32F10x_StdPeriph_Driver\src\stm32f10x_iwdg.c" ""
+A1=_ "C:\Working\KTIVT\STM32\STM32_IAR_kanal_SS\STM32F10x_StdPeriph_Driver\src\stm32f10x_rtc.c" ""
+A2=_ "C:\Working\KTIVT\STM32\STM32_IAR_kanal_SS\STM32F10x_StdPeriph_Driver\src\stm32f10x_spi.c" ""
+Count=3
 SuppressDialog=0

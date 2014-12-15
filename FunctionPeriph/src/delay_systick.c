@@ -14,10 +14,10 @@
 #include "stm32f10x.h"
 #include "delay_systick.h"
 
-uint16_t delay_count=0;
+__IO uint32_t delay_count=0;
 
 
-void delay_s ( uint16_t delay_time ){
+void delay_s ( uint32_t delay_time ){
    SysTick_Config(SystemCoreClock/1000); //enable and set call interrupts evry 1 ms 
    delay_count = delay_time*1000;
    while(delay_count!=0);
@@ -26,7 +26,7 @@ void delay_s ( uint16_t delay_time ){
 }
 
 
-void delay_ms ( uint16_t delay_time ){
+void delay_ms ( uint32_t delay_time ){
    SysTick_Config(SystemCoreClock/1000); //enable and set call interrupts evry 1 ms 
    delay_count = delay_time;
    while(delay_count!=0);
@@ -35,7 +35,7 @@ void delay_ms ( uint16_t delay_time ){
 }
 
 
-void delay_us ( uint16_t delay_time ){
+void delay_us ( uint32_t delay_time ){
    SysTick_Config(SystemCoreClock/1000000); //enable and set call interrupts evry 1 ms 
    delay_count = delay_time;
    while(delay_count!=0);

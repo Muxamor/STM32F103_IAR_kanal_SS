@@ -190,6 +190,15 @@
         <name>$PROJ_DIR$\FunctionPeriph\inc\delay_systick.h</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\FunctionPeriph\inc\IC_fn.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\FunctionPeriph\inc\SPI_fn.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\FunctionPeriph\inc\structure.h</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\FunctionPeriph\inc\usart_fn.h</name>
       </file>
     </group>
@@ -197,6 +206,12 @@
       <name>src</name>
       <file>
         <name>$PROJ_DIR$\FunctionPeriph\src\delay_systick.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\FunctionPeriph\src\IC_fn.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\FunctionPeriph\src\SPI_fn.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\FunctionPeriph\src\usart_fn.c</name>
