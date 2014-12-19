@@ -257,7 +257,8 @@ void SPI3_IRQHandler(void){
      ///буфер передачи пусть возможнапосылка следующего пакета
     
      Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
-     SPI_Send_Data_u16(SPI3,0x0000);// For clear a interrupt flag TXE
+    // SPI_I2S_ClearITPendingBit(SPI3,SPI_I2S_IT_TXE);// For clear a interrupt flag TXE
+     SPI_Send_Data_u16(SPI3,0xABCD);// For clear a interrupt flag TXE
      SPI3_INT_BB_OFF();
     
    }else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_RXNE)==SET){
@@ -266,10 +267,12 @@ void SPI3_IRQHandler(void){
      
      SPI3_Recive_Buf->SPI3_Buf_Len++;
      
-     if( SPI3_Recive_Buf->SPI3_Buf_Len==2){
-       SPI3_Recive_Buf->SPI3_Buf_Len=0;
+     if( SPI3_Recive_Buf->SPI3_Buf_Len==3 ){
+        SPI3_Recive_Buf->SPI3_Buf_Len=0;
+     } else if( SPI3_Recive_Buf->SPI3_Buf_Len==2 ){
        Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=1; // Recive parsel
      }
+     
      LED_RED_ON();
      
       

@@ -1,7 +1,7 @@
 #ifndef __SPI_FN
 #define __SPI_FN
 
-#define SIZE_SPI3_BUF 2
+#define SIZE_SPI3_BUF 3
 typedef struct{
 
   u16 SPI3_Recive_Buf[SIZE_SPI3_BUF];

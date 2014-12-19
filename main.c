@@ -73,8 +73,6 @@ void main()
   UART_SendString(UART4, "\n>");
 
  
-
-
   while(1) {
     
     IWDG_ReloadCounter();

@@ -271,14 +271,15 @@ void SetupSPI3(void){
   *                                        When the SPI3/I2S3 is remapped using this function, the SWJ is configured
   *                                        to Full SWJ Enabled (JTAG-DP + SW-DP) but without JTRST.   
   */
-  
-    
-    
-
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);// Enable Clock  
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);// Enable Clock 
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);// Enable Clock 
+  
+ // GPIO_PinRemapConfig(GPIO_Remap_SPI3, DISABLE);
+  GPIO_PinRemapConfig(GPIO_Remap_SWJ_NoJTRST, ENABLE); 
+  GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+  
   
   // PB5 SPI3 MOSI 
   // PB4 SPI3 MISO 
@@ -302,10 +303,7 @@ void SetupSPI3(void){
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Mode  =  GPIO_Mode_IN_FLOATING; //GPIO_Mode_AF_PP;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
-  
-  GPIO_PinRemapConfig(GPIO_Remap_SPI3, ENABLE);
-  //GPIO_PinRemapConfig(GPIO_Remap_SWJ_NoJTRST, ENABLE); 
-  GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);  
+   
   
   // INT pin output For BB board
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_5;
@@ -313,12 +311,13 @@ void SetupSPI3(void){
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
   GPIO_Init(GPIOC, &GPIO_InitStructure);
   GPIO_ResetBits(GPIOC, GPIO_Pin_5);
-  /* For Ser/Reset INT for BB board need to use function:                    */
+  /* For Set/Reset INT for BB board need to use function:                    */
   /* SPI3_INT_BB_OFF() SPI3_INT_BB_ON()                                      */
   
   
   // Enable Clock for SPI3
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3 , ENABLE);
+    
   //Setup SPI3
   SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
   SPI_InitStructure.SPI_Mode = SPI_Mode_Slave; 
@@ -509,9 +508,9 @@ void SetupInterrupt(void){
   NVCI_Init_Struct.NVIC_IRQChannelCmd= ENABLE;
   NVIC_Init(&NVCI_Init_Struct);
 
-  
-  SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_TXE, ENABLE);
   SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_RXNE, ENABLE);
+  SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_TXE, ENABLE);
+  
   
   NVIC_EnableIRQ(SPI3_IRQn);          
 //  NVIC_DisableIRQ(SPI3_IRQn);
