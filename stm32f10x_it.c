@@ -269,7 +269,9 @@ void SPI3_IRQHandler(void){
      
      if( SPI3_Recive_Buf->SPI3_Buf_Len==3 ){
         SPI3_Recive_Buf->SPI3_Buf_Len=0;
-     } else if( SPI3_Recive_Buf->SPI3_Buf_Len==2 ){
+     } 
+    
+     if( SPI3_Recive_Buf->SPI3_Buf_Len==2 ){
        Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=1; // Recive parsel
      }
      

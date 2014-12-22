@@ -26,6 +26,7 @@
   u16 Frequency_sampling_number;
   u8 Frequency_sampling_count_for_UART;
   u8 Freq_sampling_count_down_for_UART;
+  u8 Port_to_send_data_SPI3_or_UART;
   u8 Start_stop;
   
   

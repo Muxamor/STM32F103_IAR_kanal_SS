@@ -510,8 +510,7 @@ void SetupInterrupt(void){
 
   SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_RXNE, ENABLE);
   SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_TXE, ENABLE);
-  
-  
+ 
   NVIC_EnableIRQ(SPI3_IRQn);          
 //  NVIC_DisableIRQ(SPI3_IRQn);
  /*----------------------------------------------------------------------------*/

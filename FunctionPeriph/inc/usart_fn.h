@@ -2,7 +2,7 @@
 #define __USART_FN
 
 
-#define UART_COMMAND_MAS_SIZE 11
+#define UART_COMMAND_MAS_SIZE 13
 
 #define SIZE_UART_BUF 30
 

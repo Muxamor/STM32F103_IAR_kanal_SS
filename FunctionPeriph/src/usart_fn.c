@@ -73,7 +73,8 @@ void uart_terminal_command(_UARTBUF *recive_buf, _SETTINGSOFCHANNEL *settings_ch
                                                 "fd", "cfg",  //4,5
                                                 "reboot", "help", //  6,7 
                                                 "default",//8
-                                                "start","stop"//9,10
+                                                "start","stop",//9,10
+                                                "spi", "uart"//11,12
                                              };
   
   u8 i;
@@ -206,6 +207,7 @@ void uart_terminal_command(_UARTBUF *recive_buf, _SETTINGSOFCHANNEL *settings_ch
           UART_SendString(UART4, " * cfg              - Inquiry configuration and number of channel              *");
           UART_SendString(UART4, " * default          - Default configuration                                    *");
           UART_SendString(UART4, " * reboot           - Reboot channel                                           *");
+          UART_SendString(UART4, " * spi/uart         - Port to send data from ADC to SPI or UART port          *");
           UART_SendString(UART4, " * start            - Start read ADC data                                      *");
           UART_SendString(UART4, " * stop             - Stop read ADC data                                       *");
           UART_SendString(UART4, " *                                                                             *");
@@ -224,7 +226,15 @@ void uart_terminal_command(_UARTBUF *recive_buf, _SETTINGSOFCHANNEL *settings_ch
           settings_channel->Start_stop=0;
           NVIC_DisableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
           print_settings=1;
+          break; 
+        case 11: // data send to SPI3 port 
+          settings_channel->Port_to_send_data_SPI3_or_UART=0;
+          print_settings=1;
           break;  
+        case 12: // data send to UART port 
+          settings_channel->Port_to_send_data_SPI3_or_UART=1;
+          print_settings=1;
+          break;          
           
         default:
           numder_of_command = -1;
@@ -242,6 +252,13 @@ void uart_terminal_command(_UARTBUF *recive_buf, _SETTINGSOFCHANNEL *settings_ch
     sprintf((char *)str,   "\n\r af1 %d  af2 %d  fcut %d  fd %d  swinput %d \n\r Number of channel: %d \n\r", 
                   settings_channel->Aplification_factor_1, settings_channel->Aplification_factor_2, settings_channel->Frequency_cut_off, settings_channel->Frequency_sampling, settings_channel->Switching_input, settings_channel->Numer_of_Channel);
     UART_SendString(UART4, str );
+    
+    if( settings_channel->Port_to_send_data_SPI3_or_UART==0){
+      UART_SendString(UART4, " Port to send data is: SPI \n\r" );
+    }else{
+      UART_SendString(UART4, " Port to send data is: UART \n\r" );
+    }
+    
     print_settings=0;
  }
  

@@ -87,7 +87,7 @@ void main()
       uart_terminal_command(UART_Buf, Settings_Of_Channel );
     }
 
-    if(Interrupt_Monitor->ADC_AD17_data_ready_interrupt==1 && Settings_Of_Channel->Start_stop==1){
+    if(Interrupt_Monitor->ADC_AD17_data_ready_interrupt==1 && Settings_Of_Channel->Start_stop==1 && Settings_Of_Channel->Port_to_send_data_SPI3_or_UART==1){
       Interrupt_Monitor->ADC_AD17_data_ready_interrupt=0;
       u16 data1;
       u8 data2;
