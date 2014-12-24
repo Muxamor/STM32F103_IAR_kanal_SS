@@ -266,10 +266,6 @@
       <name>$PROJ_DIR$\FunctionPeriph\src\SPI_fn.c</name>
       <outputs>
         <tool>
-          <name>ICCARM</name>
-          <file> 85</file>
-        </tool>
-        <tool>
           <name>BICOMP</name>
           <file> 86</file>
         </tool>

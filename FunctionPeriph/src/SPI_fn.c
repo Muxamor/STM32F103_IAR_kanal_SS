@@ -107,16 +107,16 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
    //u8 Number_of_command;
    u8 Value_of_settings;
    u16 tmp;
-   enum Command_from_BB  Number_of_command;
+   enum Command_from_BB Received_Command;
    
     tmp= SPI3_Rec_Buf->SPI3_Recive_Buf[0];
     Value_of_settings = (u8) tmp; 
-    Number_of_command = (enum Command_from_BB) (tmp>>8);
+    Received_Command = (enum Command_from_BB) (tmp>>8);
     
     
-    if(Number_of_command<=Read_Sampling_Frequency_fd_command){//versed  managment command
+    if(Received_Command<=Read_Sampling_Frequency_fd_command){//versed  managment command
       
-      switch(Number_of_command){
+      switch (Received_Command){
        case Set_Input_Switch_command://Switching_input get and set settings
          if(Set_Settings_DA12(Value_of_settings) == 1){
           Error_happened=1;
@@ -153,7 +153,7 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         break;
         
       case Read_Cutoff_Frequency_LPF_fcut_command://Frequency_cut_off send settings
-        SPI3_Answer_Of_Command( 6, settings_channel->Frequency_cut_off);
+        SPI3_Answer_Of_Command( (u8)Read_Cutoff_Frequency_LPF_fcut_command, settings_channel->Frequency_cut_off);
         break;
         
       case Set_Amplification_factor_Af2_command://Aplification_factor_2 get and set settings
@@ -166,7 +166,7 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         break;
         
       case Read_Amplification_factor_Af2_command://Aplification_factor_2 send settings
-        SPI3_Answer_Of_Command( 8, settings_channel->Aplification_factor_2);
+        SPI3_Answer_Of_Command( (u8)Read_Amplification_factor_Af2_command, settings_channel->Aplification_factor_2);
         break;
       
       case Set_Sampling_Frequency_fd_command://Frequency_sampling or Frequency_descritisation  get and set settings
@@ -179,7 +179,7 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         break;
         
       case Read_Sampling_Frequency_fd_command://Frequency_sampling or Frequency_descritisation send settings
-        SPI3_Answer_Of_Command( 10, settings_channel->Frequency_sampling);
+        SPI3_Answer_Of_Command( (u8)Read_Sampling_Frequency_fd_command, settings_channel->Frequency_sampling);
         break;
         
       default:
