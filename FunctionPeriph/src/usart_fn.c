@@ -199,15 +199,15 @@ void uart_terminal_command(_UARTBUF *recive_buf, _SETTINGSOFCHANNEL *settings_ch
         case 7: // help                                                       
           UART_SendString(UART4, " ***********************************Help menu***********************************");
           UART_SendString(UART4, " *                                                                             *");
-          UART_SendString(UART4, " * af1 <value>      - Ampilfication factor K1 (DA6), <value> - 0..8            *");
-          UART_SendString(UART4, " * af2 <value>      - Ampilfication factor K2 (DA2), <value> - 0..12           *");
+          UART_SendString(UART4, " * af1 <value>      - Amplification factor K1 (DA6), <value> - 0..8            *");
+          UART_SendString(UART4, " * af2 <value>      - Amplification factor K2 (DA2), <value> - 0..12           *");
           UART_SendString(UART4, " * fcut <value>     - Cutoff frequency of the low pass filter, <value> - 0..19 *");
           UART_SendString(UART4, " * swinput <value>  - Switching input mode (DA12), <value> - 0..4              *");
           UART_SendString(UART4, " * fd <value>       - Sampling frequency, <value> - 0..6                       *");
           UART_SendString(UART4, " * cfg              - Inquiry configuration and number of channel              *");
           UART_SendString(UART4, " * default          - Default configuration                                    *");
           UART_SendString(UART4, " * reboot           - Reboot channel                                           *");
-          UART_SendString(UART4, " * spi/uart         - Port to send data from ADC to SPI or UART port          *");
+          UART_SendString(UART4, " * spi/uart         - Send data from ADC to SPI or UART port                   *");
           UART_SendString(UART4, " * start            - Start read ADC data                                      *");
           UART_SendString(UART4, " * stop             - Stop read ADC data                                       *");
           UART_SendString(UART4, " *                                                                             *");

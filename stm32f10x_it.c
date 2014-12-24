@@ -254,10 +254,8 @@ extern _SPI3RECIVEBUF *SPI3_Recive_Buf;
 void SPI3_IRQHandler(void){
   
    if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_TXE)==SET){
-     ///буфер передачи пусть возможнапосылка следующего пакета
-    
+      
      Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
-    // SPI_I2S_ClearITPendingBit(SPI3,SPI_I2S_IT_TXE);// For clear a interrupt flag TXE
      SPI_Send_Data_u16(SPI3,0xABCD);// For clear a interrupt flag TXE
      SPI3_INT_BB_OFF();
     

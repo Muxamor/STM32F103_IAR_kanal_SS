@@ -104,19 +104,21 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
   
    u8 Error_happened=0;
    u8 Send_OK_answer=0;
-   u8 Number_of_command;
+   //u8 Number_of_command;
    u8 Value_of_settings;
    u16 tmp;
+   enum Command_from_BB  Number_of_command;
    
     tmp= SPI3_Rec_Buf->SPI3_Recive_Buf[0];
     Value_of_settings = (u8) tmp; 
-    Number_of_command = (u8) (tmp>>8);
+    Number_of_command = (enum Command_from_BB) (tmp>>8);
     
-    if(Number_of_command<=10){//versed  managment command
+    
+    if(Number_of_command<=Read_Sampling_Frequency_fd_command){//versed  managment command
       
       switch(Number_of_command){
-       case 1://Switching_input get and set settings
-        if(Set_Settings_DA12(Value_of_settings) == 1){
+       case Set_Input_Switch_command://Switching_input get and set settings
+         if(Set_Settings_DA12(Value_of_settings) == 1){
           Error_happened=1;
         }else{
           settings_channel->Switching_input= Value_of_settings;
@@ -124,11 +126,11 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         }
         break;
         
-      case 2://Switching_input send settings
-        SPI3_Answer_Of_Command( 2, settings_channel->Switching_input );
+      case Read_Input_Switch_command://Switching_input send settings
+        SPI3_Answer_Of_Command((u8)Read_Input_Switch_command, settings_channel->Switching_input );
         break;
         
-      case 3://Aplification_factor_1 get and set settings
+      case Set_Amplification_factor_Af1_command://Aplification_factor_1 get and set settings
         if(Set_Settings_DA6(Value_of_settings) == 1){
           Error_happened=1;
         }else{
@@ -137,11 +139,11 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         }
         break;
         
-      case 4://Aplification_factor_1 send settings
+      case Read_Amplification_factor_Af1_command://Aplification_factor_1 send settings
         SPI3_Answer_Of_Command( 4, settings_channel->Aplification_factor_1);
         break;
       
-      case 5://Frequency_cut_off get and set settings
+      case Set_Cutoff_Frequency_LPF_fcut_command://Frequency_cut_off get and set settings
         if(Set_Settings_DA8(Value_of_settings)==1){
           Error_happened=1;
         }else{
@@ -150,11 +152,11 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         }
         break;
         
-      case 6://Frequency_cut_off send settings
+      case Read_Cutoff_Frequency_LPF_fcut_command://Frequency_cut_off send settings
         SPI3_Answer_Of_Command( 6, settings_channel->Frequency_cut_off);
         break;
         
-      case 7://Aplification_factor_2 get and set settings
+      case Set_Amplification_factor_Af2_command://Aplification_factor_2 get and set settings
         if(Set_Settings_DA2(Value_of_settings) == 1){
           Error_happened=1;
         }else{
@@ -163,11 +165,11 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         }
         break;
         
-      case 8://Aplification_factor_2 send settings
+      case Read_Amplification_factor_Af2_command://Aplification_factor_2 send settings
         SPI3_Answer_Of_Command( 8, settings_channel->Aplification_factor_2);
         break;
       
-      case 9://Frequency_sampling or Frequency_descritisation  get and set settings
+      case Set_Sampling_Frequency_fd_command://Frequency_sampling or Frequency_descritisation  get and set settings
         if(Set_Settings_FD(Value_of_settings,settings_channel ) == 1){
           Error_happened=1;
         }else{
@@ -176,7 +178,7 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         }
         break;
         
-      case 10://Frequency_sampling or Frequency_descritisation send settings
+      case Read_Sampling_Frequency_fd_command://Frequency_sampling or Frequency_descritisation send settings
         SPI3_Answer_Of_Command( 10, settings_channel->Frequency_sampling);
         break;
         
@@ -192,7 +194,7 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
     
     if(Send_OK_answer==1){
       SPI3_Answer_Of_Command(00,01);//SEND answer OK
-    } else if(Error_happened==1 || Send_OK_answer==0 ){
+    } else if(Error_happened==1){
       SPI3_Answer_Of_Command(00,02);//Error command
     }
     

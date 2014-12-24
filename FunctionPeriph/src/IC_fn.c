@@ -475,8 +475,10 @@ u8 Set_Default_Settings(_SETTINGSOFCHANNEL *channel_settings){
    channel_settings->Start_stop=0;
    // Freq sampling =0 -- show all counts
    channel_settings->Frequency_sampling=0;
+   channel_settings->Frequency_sampling_number=64;
    channel_settings->Frequency_sampling_count_for_UART=0;
-   
+   //SPI port to send data from ADC
+   channel_settings->Port_to_send_data_SPI3_or_UART=0;
     return 0;   
    
 }

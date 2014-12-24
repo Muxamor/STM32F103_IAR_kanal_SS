@@ -33,4 +33,16 @@
   u8 time_test_LED;
 } _SETTINGSOFCHANNEL;
 
+enum Command_from_BB {Set_Input_Switch_command=0x01, 
+                      Read_Input_Switch_command=0x02,
+                      Set_Amplification_factor_Af1_command=0x03,
+                      Read_Amplification_factor_Af1_command=0x04,
+                      Set_Cutoff_Frequency_LPF_fcut_command=0x05,
+                      Read_Cutoff_Frequency_LPF_fcut_command=0x06,
+                      Set_Amplification_factor_Af2_command=0x07,
+                      Read_Amplification_factor_Af2_command=0x08,
+                      Set_Sampling_Frequency_fd_command=0x09,
+                      Read_Sampling_Frequency_fd_command=0x10};
+
+
 #endif
