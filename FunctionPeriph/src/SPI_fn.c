@@ -140,7 +140,7 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         break;
         
       case Read_Amplification_factor_Af1_command://Aplification_factor_1 send settings
-        SPI3_Answer_Of_Command( 4, settings_channel->Aplification_factor_1);
+        SPI3_Answer_Of_Command( (u8)Read_Amplification_factor_Af1_command, settings_channel->Aplification_factor_1);
         break;
       
       case Set_Cutoff_Frequency_LPF_fcut_command://Frequency_cut_off get and set settings
