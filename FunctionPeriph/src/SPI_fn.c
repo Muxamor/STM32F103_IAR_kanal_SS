@@ -124,6 +124,7 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
           settings_channel->Switching_input= Value_of_settings;
           Send_OK_answer=1;
         }
+        
         break;
         
       case Read_Input_Switch_command://Switching_input send settings
