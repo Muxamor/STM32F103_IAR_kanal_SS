@@ -1910,6 +1910,9 @@
         <name>$PROJ_DIR$\FunctionPeriph\inc\delay_systick.h</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\FunctionPeriph\inc\global_variables.h</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\FunctionPeriph\inc\IC_fn.h</name>
       </file>
       <file>

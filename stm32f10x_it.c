@@ -27,7 +27,7 @@
 #include "usart_fn.h"
 #include "SPI_fn.h"
 #include "SetupPeriphSS.h"
-
+#include "global_variables.h"
 #include "delay_systick.h"
     
 
@@ -147,9 +147,8 @@ void SysTick_Handler(void){
   
 }
 
-extern _INTERRUPTMONITOR *Interrupt_Monitor;
-extern _SETTINGSOFCHANNEL  *Settings_Of_Channel;
-
+//extern _INTERRUPTMONITOR *Interrupt_Monitor;
+//extern _SETTINGSOFCHANNEL  *Settings_Of_Channel;
 /**
   * @brief  This function handles  RTC evry one second interrupt request.
   * @param  None
@@ -200,9 +199,7 @@ void EXTI0_IRQHandler(void){
 }
 
 
-extern _UARTBUF *UART_Buf;
-
-
+//extern _UARTBUF *UART_Buf;
 /**
   * @brief  This function handles  UART4 interrupt request.
   * @param  None
@@ -244,8 +241,7 @@ void UART4_IRQHandler(void){
       
 }
 
-extern _SPI3RECIVEBUF *SPI3_Recive_Buf;
-
+//extern _SPI3RECIVEBUF *SPI3_Recive_Buf;
 /**
   * @brief  This function handles SPI3 interrupt request.
   * @param  None
@@ -261,7 +257,7 @@ void SPI3_IRQHandler(void){
     
    }else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_RXNE)==SET){
      
-     SPI3_Recive_Buf->SPI3_Recive_Buf[SPI3_Recive_Buf->SPI3_Buf_Len]=SPI_Receive_Data(SPI3);
+     SPI3_Recive_Buf->SPI3ReciveBuf[SPI3_Recive_Buf->SPI3_Buf_Len]=SPI_Receive_Data(SPI3);
      
      SPI3_Recive_Buf->SPI3_Buf_Len++;
      
@@ -271,10 +267,9 @@ void SPI3_IRQHandler(void){
     
      if( SPI3_Recive_Buf->SPI3_Buf_Len==2 ){
        Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=1; // Recive parsel
+       LED_RED_ON();// Удалить в релизе
      }
-     
-     LED_RED_ON();
-     
+             
       
    }else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_ERR)==SET){
      ///Произошла ошибка

@@ -1,5 +1,5 @@
-#ifndef __IC_FN
-#define __IC_FN
+#ifndef __IC_FN_H
+#define __IC_FN_H
 
 u8 Set_Settings_DA12(u8 t);
 u8 Set_Settings_DA6(u8 t);

@@ -3,10 +3,11 @@
 #include "SetupPeriphSS.h"
 #include "delay_systick.h"
 #include "structure.h"
+
 #include "IC_fn.h"
 #include "usart_fn.h"
 #include "SPI_fn.h"
-
+#include "global_variables.h"
 
 
 
@@ -53,8 +54,7 @@ void main()
   LED_RED_OFF();
   LED_YELLOW_OFF();
   LED_GREEN_OFF();
- // 
-   
+    
   //IWDG_ReloadCounter();
   u8 str[100];
   UART_SendString(UART4, "*****************************************************************************");
