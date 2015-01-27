@@ -79,7 +79,7 @@ void main()
     
     if(Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel==1){
       Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=0;
-      SPI3_command_from_BB(SPI3_Recive_Buf, Settings_Of_Channel );
+      SPI3_command_from_BB(SPI3_Recive_Buf, Settings_Of_Channel, Interrupt_Monitor);
     }
       
     if(Interrupt_Monitor->UART_Interrup==1){

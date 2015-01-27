@@ -17,6 +17,9 @@
 #include "IC_fn.h"
 #include "SetupPeriphSS.h"
 
+#define PASS_RECIVE_PARCEL_SPI3 1
+#define RECIVE_PARCEL_SPI3 0
+
 /*----------------------------------------------------------------------------*/
 
 
@@ -76,8 +79,21 @@ uint16_t SPI_Receive_Data( SPI_TypeDef* SPIx){
   * @param  None
   * @retval None
   */
-void SPI3_Answer_Of_Command( u8 numberOFcommand, u8 value_command ){
+void SPI3_Sent_Response_to_BB( u16 *data, u8 length, _INTERRUPTMONITOR *interrupt ){
   
+  for( u8 i=0 ; i<length; i++, data++){
+    
+    while(interrupt->SPI3_Interrup_TX_Buffer_Empty==0);
+        
+    interrupt->SPI3_Interrup_TX_Buffer_Empty=0;
+  
+    SPI_Send_Data_u16(SPI3, *data);
+          
+    SPI3_INT_BB_ON();
+      
+  }
+ 
+    /*
   u16 answer_to_BB=0;
   
   answer_to_BB = numberOFcommand;
@@ -89,6 +105,15 @@ void SPI3_Answer_Of_Command( u8 numberOFcommand, u8 value_command ){
   SPI_I2S_SendData(SPI3,answer_to_BB);
   
    SPI3_INT_BB_ON();
+   
+   if( pass_recive_word==PASS_RECIVE_PARCEL_SPI3){
+     
+     SPI_Rec_Buf->Reset_Buf=1;
+   
+   }else{
+     
+     SPI_Rec_Buf->Reset_Buf=0;
+   }*/
 
 }
 
@@ -98,19 +123,25 @@ void SPI3_Answer_Of_Command( u8 numberOFcommand, u8 value_command ){
   * @param  None
   * @retval None
   */
-void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *settings_channel){
+void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *settings_channel, _INTERRUPTMONITOR *interrupt){
    
    SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_RXNE, DISABLE);
   
    u8 Error_happened=0;
    u8 Send_OK_answer=0;
    u8 Value_of_settings;
-   u16 tmp;
+   u16 Value_of_settings_2;
    enum Command_from_BB Received_Command;
+   u8 ask_buf[4];
+   u8 length;
+   u16 tmp;
+   
    
     tmp= SPI3_Rec_Buf->SPI3ReciveBuf[0];
     Value_of_settings = (u8) tmp; 
     Received_Command = (enum Command_from_BB) (tmp>>8);
+    
+    Value_of_settings_2=SPI3_Rec_Buf->SPI3ReciveBuf[1];
     
     if( Received_Command <= 0 || Received_Command >= MAX_COMMAND ){
       
@@ -129,7 +160,9 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
           }
           break;
         case Read_Input_Switch_command://Switching_input send settings
-          SPI3_Answer_Of_Command((u8)Read_Input_Switch_command, settings_channel->Switching_input );
+          ask_buf[0]=(u8)Read_Input_Switch_command;
+          ask_buf[1]=settings_channel->Switching_input;
+          length=1;
           break;
         
         case Write_Amplification_factor_Af1_command://Aplification_factor_1 get and set settings
@@ -141,7 +174,9 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
           }
           break;
         case Read_Amplification_factor_Af1_command://Aplification_factor_1 send settings
-          SPI3_Answer_Of_Command( (u8)Read_Amplification_factor_Af1_command, settings_channel->Aplification_factor_1);
+          ask_buf[0]=(u8)Read_Amplification_factor_Af1_command;
+          ask_buf[1]=settings_channel->Aplification_factor_1;
+          length=1;
           break;
       
         case Write_Cutoff_Frequency_LPF_fcut_command://Frequency_cut_off get and set settings
@@ -153,7 +188,9 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
           }
           break;
         case Read_Cutoff_Frequency_LPF_fcut_command://Frequency_cut_off send settings
-          SPI3_Answer_Of_Command( (u8)Read_Cutoff_Frequency_LPF_fcut_command, settings_channel->Frequency_cut_off);
+          ask_buf[0]=(u8)Read_Cutoff_Frequency_LPF_fcut_command;
+          ask_buf[1]=settings_channel->Frequency_cut_off;
+          length=1;
           break;
         
         case Write_Amplification_factor_Af2_command://Aplification_factor_2 get and set settings
@@ -165,7 +202,9 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
           }
           break;
         case Read_Amplification_factor_Af2_command://Aplification_factor_2 send settings
-          SPI3_Answer_Of_Command( (u8)Read_Amplification_factor_Af2_command, settings_channel->Aplification_factor_2);
+          ask_buf[0]=(u8)Read_Amplification_factor_Af2_command;
+          ask_buf[1]=settings_channel->Aplification_factor_2;
+          length=1;
           break;
       
         case Write_Sampling_Frequency_fd_command://Frequency_sampling or Frequency_descritisation  get and set settings
@@ -177,26 +216,40 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
           }
           break;
         case Read_Sampling_Frequency_fd_command://Frequency_sampling or Frequency_descritisation send settings
-          SPI3_Answer_Of_Command( (u8)Read_Sampling_Frequency_fd_command, settings_channel->Frequency_sampling);
+          ask_buf[0]=(u8)Read_Sampling_Frequency_fd_command;
+          ask_buf[1]=settings_channel->Frequency_sampling;
+          length=1;
           break;
         
         default:
           Error_happened=1;
       }
       
-    } else {
+    } else if(Received_Command <= Read_Ready_command){
+      
+      
     
     } 
        
     
     if(Send_OK_answer==1){
-      SPI3_Answer_Of_Command(00,01);//SEND answer OK
+      
+      ask_buf[0]=00;
+      ask_buf[1]=01;//answer OK
+      length=1;
+      
     } else if(Error_happened==1){
-      SPI3_Answer_Of_Command(00,02);//Error command
-    }
-    
+      
+      ask_buf[0]=00;
+      ask_buf[1]=02;//answer Error
+      length=1;
+      
+    } 
+     
     SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_RXNE, ENABLE);
-
+    
+    SPI3_Sent_Response_to_BB( (u16 *)ask_buf, length, interrupt );
+        
 }
 
 

@@ -249,6 +249,7 @@ void UART4_IRQHandler(void){
   */
 void SPI3_IRQHandler(void){
   
+  
    if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_TXE)==SET){
       
      Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
@@ -257,26 +258,33 @@ void SPI3_IRQHandler(void){
     
    }else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_RXNE)==SET){
      
-     SPI3_Recive_Buf->SPI3ReciveBuf[SPI3_Recive_Buf->SPI3_Buf_Len]=SPI_Receive_Data(SPI3);
+      SPI3_Recive_Buf->SPI3ReciveBuf[SPI3_Recive_Buf->SPI3_Buf_Len]=SPI_Receive_Data(SPI3);
      
-     SPI3_Recive_Buf->SPI3_Buf_Len++;
-     
-     if( SPI3_Recive_Buf->SPI3_Buf_Len==3 ){
+      if(SPI3_Recive_Buf->SPI3ReciveBuf[0]==0x0000){
+        
         SPI3_Recive_Buf->SPI3_Buf_Len=0;
-     } 
-    
-     if( SPI3_Recive_Buf->SPI3_Buf_Len==2 ){
-       Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=1; // Recive parsel
-       LED_RED_ON();// Удалить в релизе
-     }
+              
+    } else {
+     
+        SPI3_Recive_Buf->SPI3_Buf_Len++;
+        
+        if( SPI3_Recive_Buf->SPI3_Buf_Len==2 ){
+          
+          SPI3_Recive_Buf->SPI3_Buf_Len=0;          
+          Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=1; // Recive parsel
+          LED_RED_ON();// Удалить в релизе
+          
+        }
+        
+    }
              
       
-   }else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_ERR)==SET){
+   } /*else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_ERR)==SET){
      ///Произошла ошибка
      Interrupt_Monitor-> SPI3_Interrup_ERROR_Occurred=1;
      
    }
-     
+     */
    
 }
 

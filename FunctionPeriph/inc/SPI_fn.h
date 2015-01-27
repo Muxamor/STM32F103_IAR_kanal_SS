@@ -1,7 +1,7 @@
 #ifndef __SPI_FN_H
 #define __SPI_FN_H
 
-#define SIZE_SPI3_BUF 3
+#define SIZE_SPI3_BUF 2
 typedef struct{
 
   u16 SPI3ReciveBuf[SIZE_SPI3_BUF];
@@ -12,7 +12,7 @@ typedef struct{
 void SPI_Send_Data_u16( SPI_TypeDef* SPIx, uint16_t Data );
 void SPI_Send_Data_u8( SPI_TypeDef* SPIx, uint8_t Data );
 uint16_t SPI_Receive_Data( SPI_TypeDef* SPIx);
-void SPI3_Answer_Of_Command( u8 numberOFcommand, u8 value_command );
-void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Res_Buf, _SETTINGSOFCHANNEL *settings_channel);
+void SPI3_Sent_Response_to_BB( u16 *data, u8 length, _INTERRUPTMONITOR *interrupt );
+void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *settings_channel, _INTERRUPTMONITOR *interrupt);
 
 #endif

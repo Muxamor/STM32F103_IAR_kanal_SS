@@ -43,6 +43,17 @@ enum Command_from_BB {Write_Input_Switch_command=0x01,
                       Read_Amplification_factor_Af2_command=0x08,
                       Write_Sampling_Frequency_fd_command=0x09,
                       Read_Sampling_Frequency_fd_command=0x0A,
+                      Write_Saturation_Level_Af1_command=0x0B,
+                      Read_Saturation_Level_Af1_command=0x0C,
+                      Write_Saturation_Level_Af2_plus_command=0x0D,
+                      Write_Saturation_Level_Af2_minus_command=0x0F,
+                      Read_Saturation_Level_Af2_plus_command=0x0E,
+                      Read_Saturation_Level_Af2_minus_command=0x10,
+                      Write_Control_Negative_Saturation_level_command=0x11,
+                      Read_Control_Negative_Saturation_level_command=0x12,
+                      
+                      Read_Ready_command=0x20,
+                      
                       MAX_COMMAND
                       };
 
