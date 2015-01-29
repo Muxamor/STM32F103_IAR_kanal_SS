@@ -1,6 +1,19 @@
 #ifndef __STRUCTURE_H
 #define __STRUCTURE_H
 
+// Endianess definitions
+
+#define REVERSE_LE_BE_u32(A) \
+	((((u32)(A) & 0xff000000) >> 24) | \
+            (((u32)(A) & 0x00ff0000) >> 8)  | \
+            (((u32)(A) & 0x0000ff00) << 8)  | \
+            (((u32)(A) & 0x000000ff) << 24))
+
+#define REVERSE_LE_BE_u16(A) \
+	((((u16)(A) & 0xff00) >> 8) | \
+             (((u16)(A) & 0x00ff) << 8))
+
+
  typedef struct{
    
   u8 UART_Interrup                      :1;

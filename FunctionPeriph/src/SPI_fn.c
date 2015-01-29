@@ -17,9 +17,6 @@
 #include "IC_fn.h"
 #include "SetupPeriphSS.h"
 
-#define PASS_RECIVE_PARCEL_SPI3 1
-#define RECIVE_PARCEL_SPI3 0
-
 /*----------------------------------------------------------------------------*/
 
 
@@ -87,7 +84,7 @@ void SPI3_Sent_Response_to_BB( u16 *data, u8 length, _INTERRUPTMONITOR *interrup
         
     interrupt->SPI3_Interrup_TX_Buffer_Empty=0;
   
-    SPI_Send_Data_u16(SPI3, *data);
+    SPI_Send_Data_u16(SPI3, REVERSE_LE_BE_u16(*data));
           
     SPI3_INT_BB_ON();
       
