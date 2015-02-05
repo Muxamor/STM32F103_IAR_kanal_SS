@@ -39,6 +39,14 @@
   u16 Frequency_sampling_number;
   u8 Frequency_sampling_count_for_UART;
   u8 Freq_sampling_count_down_for_UART;
+  u16 Saturation_Level_Af1_plus;
+  u16 Saturation_Level_Af1_minus;
+  u32 Saturation_Level_Af2_plus;
+  u32 Saturation_Level_Af2_minus;
+  
+  
+  u8 Control_Minus_Saturation_level_Af1;
+  u8 Control_Minus_Saturation_level_Af2;
   u8 Port_to_send_data_SPI3_or_UART;
   u8 Start_stop;
   
@@ -59,13 +67,19 @@ enum Command_from_BB {Write_Input_Switch_command=0x01,
                       Write_Saturation_Level_Af1_command=0x0B,
                       Read_Saturation_Level_Af1_command=0x0C,
                       Write_Saturation_Level_Af2_plus_command=0x0D,
-                      Write_Saturation_Level_Af2_minus_command=0x0F,
                       Read_Saturation_Level_Af2_plus_command=0x0E,
+                      Write_Saturation_Level_Af2_minus_command=0x0F,
                       Read_Saturation_Level_Af2_minus_command=0x10,
-                      Write_Control_Negative_Saturation_level_command=0x11,
-                      Read_Control_Negative_Saturation_level_command=0x12,
+                      Write_Control_Minus_Saturation_level_command=0x11,
+                      Read_Control_Minus_Saturation_level_command=0x12,
+                      Write_ID_Channel_number=0x13,
+                      Read_ID_Channel_number=0x14,
+                      Write_SID_Channel_number=0x15,
+                      Read_SID_Channel_number=0x16,
                       
                       Read_Ready_command=0x20,
+                      START_STOP_command=0x21,
+                   
                       
                       MAX_COMMAND
                       };

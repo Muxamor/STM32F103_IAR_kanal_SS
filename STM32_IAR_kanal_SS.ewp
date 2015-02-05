@@ -193,11 +193,11 @@
         </option>
         <option>
           <name>CCListCMnemonics</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCListCMessages</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCListAssFile</name>
@@ -205,7 +205,7 @@
         </option>
         <option>
           <name>CCListAssSource</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCEnableRemarks</name>
@@ -278,7 +278,7 @@
         </option>
         <option>
           <name>CCCompilerRuntimeInfo</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IFpuProcessor</name>

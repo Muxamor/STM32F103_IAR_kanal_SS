@@ -140,7 +140,25 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
     
     Value_of_settings_2=SPI3_Rec_Buf->SPI3ReciveBuf[1];
     
-    if( Received_Command <= 0 || Received_Command >= MAX_COMMAND ){
+    
+    
+    if(Received_Command==START_STOP_command){
+      
+      if(Value_of_settings==0x01){
+        
+        settings_channel->Start_stop=1;//Start
+        Send_OK_answer=1;
+        
+      }else if(Value_of_settings==0x04){
+        
+        settings_channel->Start_stop=0;//STOP
+        Send_OK_answer=1;
+        
+      }else {
+        Error_happened=1;
+      }
+      
+    }else if( Received_Command <= 0 || Received_Command >= MAX_COMMAND ){
       
         Error_happened=1;
        
@@ -222,12 +240,119 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
           Error_happened=1;
       }
       
-    } else if(Received_Command <= Read_Ready_command){
+    }else if( Received_Command >= Write_Saturation_Level_Af1_command ||  Received_Command <= Read_Ready_command){
       
-      
-    
-    } 
-       
+      switch (Received_Command){
+              
+          case Write_Saturation_Level_Af1_command://Switching_input get and set settings
+            if(Value_of_settings==0x01){
+              settings_channel->Saturation_Level_Af1_plus = Value_of_settings_2;
+              Send_OK_answer=1;
+            }else if(Value_of_settings==0x02){
+              settings_channel->Saturation_Level_Af1_minus = Value_of_settings_2;
+              Send_OK_answer=1;
+            }else{
+              Error_happened=1;
+            }
+            break;
+          case Read_Saturation_Level_Af1_command:
+              ask_buf[0]=(u8)Read_Saturation_Level_Af1_command;
+              ask_buf[1]=0x00;
+              length=2;
+            if(Value_of_settings==0x01){
+              ask_buf[2]= (u8)(settings_channel->Saturation_Level_Af1_plus >> 8);
+              ask_buf[3]= (u8) settings_channel->Saturation_Level_Af1_plus;
+            }else if(Value_of_settings==0x02){
+              ask_buf[2]= (u8)(settings_channel->Saturation_Level_Af1_minus >> 8);
+              ask_buf[3]= (u8) settings_channel->Saturation_Level_Af1_minus;
+            } else {
+              Error_happened=1;
+            }
+            break; 
+            
+          case Write_Saturation_Level_Af2_plus_command:
+            settings_channel->Saturation_Level_Af2_plus = (u32)((((u32)Value_of_settings)<<16) | Value_of_settings_2);
+            Send_OK_answer=1;
+            break;
+          case Read_Saturation_Level_Af2_plus_command:
+            ask_buf[0]= (u8)Read_Saturation_Level_Af2_plus_command;
+            ask_buf[1]= (u8)(settings_channel->Saturation_Level_Af2_plus >> 16);;
+            ask_buf[2]= (u8)(settings_channel->Saturation_Level_Af2_plus >> 8);
+            ask_buf[3]= (u8) settings_channel->Saturation_Level_Af2_plus;
+            length=2;
+            break;
+            
+          case Write_Saturation_Level_Af2_minus_command:
+            settings_channel->Saturation_Level_Af2_minus = (u32)((((u32)Value_of_settings)<<16) | Value_of_settings_2);
+            Send_OK_answer=1;
+            break;
+          case Read_Saturation_Level_Af2_minus_command:
+            ask_buf[0]= (u8)Read_Saturation_Level_Af2_minus_command;
+            ask_buf[1]= (u8)(settings_channel->Saturation_Level_Af2_minus >> 16);;
+            ask_buf[2]= (u8)(settings_channel->Saturation_Level_Af2_minus >> 8);
+            ask_buf[3]= (u8) settings_channel->Saturation_Level_Af2_minus;
+            length=2;
+            break;
+            
+          case Write_Control_Minus_Saturation_level_command:
+            if(Value_of_settings==0x01){
+              settings_channel->Control_Minus_Saturation_level_Af1=1;
+              Send_OK_answer=1;
+            }else if(Value_of_settings==0x02){
+              settings_channel->Control_Minus_Saturation_level_Af1=0;
+              Send_OK_answer=1;           
+            }else if(Value_of_settings==0x03){
+              settings_channel->Control_Minus_Saturation_level_Af2=1;
+              Send_OK_answer=1;           
+            }else if(Value_of_settings==0x04){
+              settings_channel->Control_Minus_Saturation_level_Af2=0;
+              Send_OK_answer=1;           
+            }else{
+              Error_happened=1;
+            }
+            break;
+          case Read_Control_Minus_Saturation_level_command:
+            ask_buf[0]=(u8)Read_Control_Minus_Saturation_level_command;
+            ask_buf[1]=(settings_channel->Control_Minus_Saturation_level_Af2<<1) | settings_channel->Control_Minus_Saturation_level_Af1;
+            length=1;
+            break;
+            
+         case Write_ID_Channel_number:
+            if( Value_of_settings==0xF0) {
+              //дописать функцию записи ID во флэш
+              Send_OK_answer=1; 
+            } else {
+              Error_happened=1;
+            }
+            break;
+          case Read_ID_Channel_number:
+            //дописать функцию чтения из флэш ID
+            break;
+            
+          case Write_SID_Channel_number:
+            if(Value_of_settings==0x80){
+              //дописать функцию записи SID во флэш
+              Send_OK_answer=1;
+            }else {
+              Error_happened=1;
+            }
+            break;
+          case Read_SID_Channel_number:
+            //дописать функцию чтения из флэш SID
+            break;
+            
+          case Read_Ready_command:
+            ask_buf[0]=(u8)Read_Ready_command;
+            ask_buf[1]=0x80;
+            length=1;
+            //пока не выроботон критерий готовности или не готовности канала отправлять всегда готов
+            break;
+            
+            default:
+              Error_happened=1;
+        }         
+            
+    }         
     
     if(Send_OK_answer==1){
       
