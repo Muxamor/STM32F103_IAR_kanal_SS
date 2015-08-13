@@ -34,11 +34,16 @@
 #define Reset_SYNC2_DA17()   GPIO_ResetBits(GPIOB, GPIO_Pin_1)  // Reset bit for SYNC2
 
 
+  
+
+
+
 void SetupClock(void);
 void SetupUSART(void);
 void SetupSPI1(void);
 void SetupSPI2(void);
 void SetupSPI3(void);
+void Setup_DMA_SPI3(void);
 void SetupTimers(void);
 void Setup_RTC(void);
 void Setup_I2C(void);

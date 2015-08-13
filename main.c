@@ -11,15 +11,18 @@
 
 
 
+
+//_SPI3RECIVEBUF spi3_recive_buf, *SPI3_Recive_Buf=&spi3_recive_buf;
+_SPI3BUF  spi3_buf, *SPI3_Buf=&spi3_buf;
 _UARTBUF uart_buf, *UART_Buf=&uart_buf;
-_SPI3RECIVEBUF spi3_recive_buf, *SPI3_Recive_Buf=&spi3_recive_buf;
 _INTERRUPTMONITOR interrupt_monitor, *Interrupt_Monitor=&interrupt_monitor ;
 _SETTINGSOFCHANNEL settings_of_channel, *Settings_Of_Channel=&settings_of_channel; 
+ //RCC_ClocksTypeDef clckcheck,  *CLlock_get=&clckcheck;//для проверки настроенной частоты
 
 void main()
 { 
     
- 
+
  /*----------------------------Setup Periphery--------------------------------*/
   SetupClock();
   SetupLED();
@@ -28,10 +31,23 @@ void main()
   SetupSPI1();
   SetupSPI2();
   SetupSPI3();
-  SetupTimers();
+ 
+  Setup_DMA_SPI3();
+
+    // настрйока DMA потом переделать в прирывание по чип селекту
+ DMA_SetCurrDataCounter(DMA2_Channel2,2); 
+ DMA_SetCurrDataCounter(DMA2_Channel1,2); 
+
+ DMA_Cmd(DMA2_Channel2, ENABLE);
+ DMA_Cmd(DMA2_Channel1, ENABLE);
+   /*---------------------------------------------------------------------------*/ 
+ 
+ SetupTimers();
   Setup_RTC();
   SetupInterrupt();
+   
  // Setup_IWDG();
+ // RCC_GetClocksFreq(CLlock_get);//для проверки настроенной частоты
   
   Settings_Of_Channel->Numer_of_Channel = Read_Number_of_Channel();
  /*---------------------------------------------------------------------------*/   
@@ -79,7 +95,7 @@ void main()
     
     if(Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel==1){
       Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=0;
-      SPI3_command_from_BB(SPI3_Recive_Buf, Settings_Of_Channel, Interrupt_Monitor);
+      SPI3_command_from_BB(SPI3_Buf, Settings_Of_Channel, Interrupt_Monitor);
     }
       
     if(Interrupt_Monitor->UART_Interrup==1){

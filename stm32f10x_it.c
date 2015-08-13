@@ -250,34 +250,35 @@ void UART4_IRQHandler(void){
 void SPI3_IRQHandler(void){
   
   
-   if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_TXE)==SET){
+  if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_TXE)==SET){
       
-     Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
-     SPI_Send_Data_u16(SPI3,0xABCD);// For clear a interrupt flag TXE
-     SPI3_INT_BB_OFF();
+    Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
+    SPI_Send_Data_u16(SPI3,0xABCD);// For clear a interrupt flag TXE
+    SPI3_INT_BB_OFF();
     
-   }else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_RXNE)==SET){
+  }else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_RXNE)==SET){
      
-      SPI3_Recive_Buf->SPI3ReciveBuf[SPI3_Recive_Buf->SPI3_Buf_Len]=SPI_Receive_Data(SPI3);
+    SPI3_Buf->SPI3ReciveBuf[SPI3_Buf->SPI3_Buf_Len]=SPI_Receive_Data(SPI3);
      
-      if(SPI3_Recive_Buf->SPI3ReciveBuf[0]==0x0000){
+    if(SPI3_Buf->SPI3ReciveBuf[0]==0x0000){
         
-        SPI3_Recive_Buf->SPI3_Buf_Len=0;
+      SPI3_Buf->SPI3_Buf_Len=0;
+      LED_RED_OFF();
               
     } else {
      
-        SPI3_Recive_Buf->SPI3_Buf_Len++;
+      SPI3_Buf->SPI3_Buf_Len++;
         
-        if( SPI3_Recive_Buf->SPI3_Buf_Len==2 ){
+      if( SPI3_Buf->SPI3_Buf_Len==2 ){
           
-          SPI3_Recive_Buf->SPI3_Buf_Len=0;          
+          SPI3_Buf->SPI3_Buf_Len=0;          
           Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=1; // Recive parsel
           LED_RED_ON();// Удалить в релизе
           
         }
         
     }
-             
+            
       
    } /*else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_ERR)==SET){
      ///Произошла ошибка
@@ -288,6 +289,51 @@ void SPI3_IRQHandler(void){
    
 }
 
+
+//DMA_SPI3_TX
+void DMA2_Channel2_IRQHandler (void){
+  
+  if(DMA_GetITStatus(DMA2_FLAG_TC2)==SET){
+    
+    DMA_ClearITPendingBit(DMA2_FLAG_TC2);
+      
+  }
+}     
+
+//DMA_SPI3_RX
+void DMA2_Channel1_IRQHandler (void){
+  
+  if(DMA_GetITStatus(DMA2_FLAG_TC1) == SET){
+        DMA_ClearITPendingBit(DMA2_FLAG_TC1);
+    SPI3_INT_BB_OFF();
+    Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
+    
+   
+    if(SPI3_Buf->SPI3ReciveBuf[0]==0x0000){
+      
+      DMA_Cmd(DMA2_Channel2, DISABLE);
+      DMA_Cmd(DMA2_Channel1, DISABLE);
+  
+      DMA_SetCurrDataCounter(DMA2_Channel2,2); 
+      DMA_SetCurrDataCounter(DMA2_Channel1,2); 
+
+      DMA_Cmd(DMA2_Channel2, ENABLE);
+      DMA_Cmd(DMA2_Channel1, ENABLE);
+
+      SPI3_Buf->SPI3_Buf_Len=0;
+                    
+    } else{
+      
+      Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=1; 
+    
+    }
+        
+ 
+  }
+
+
+
+} 
 
 
 

@@ -49,12 +49,10 @@ void SPI_Send_Data_u8( SPI_TypeDef* SPIx, uint8_t Data ){
   // Возможно нужно включать выключать SPI  при перенастройки SPI_Cmd(SPI2,ENABLE);SPI_Cmd(SPI2,DISABLE);
   SPI_DataSizeConfig(SPIx, SPI_DataSize_8b);
 
-  SPI_I2S_SendData(SPIx, Data);
-  
   while ( SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_BSY) == SET );
   
-  SPI_DataSizeConfig(SPIx, SPI_DataSize_16b);
-
+  SPI_I2S_SendData(SPIx, Data);
+  
 }
 
 /**
@@ -76,19 +74,28 @@ uint16_t SPI_Receive_Data( SPI_TypeDef* SPIx){
   * @param  None
   * @retval None
   */
-void SPI3_Sent_Response_to_BB( u16 *data, u8 length, _INTERRUPTMONITOR *interrupt ){
+void SPI3_Sent_Response_to_BB( u16 *data, u16 length,_SPI3BUF* SPI3_Buf_Trunsmit, _INTERRUPTMONITOR *interrupt ){
   
   for( u8 i=0 ; i<length; i++, data++){
     
-    while(interrupt->SPI3_Interrup_TX_Buffer_Empty==0);
+    //while(interrupt->SPI3_Interrup_TX_Buffer_Empty==0);
         
     interrupt->SPI3_Interrup_TX_Buffer_Empty=0;
-  
-    SPI_Send_Data_u16(SPI3, REVERSE_LE_BE_u16(*data));
-          
-    SPI3_INT_BB_ON();
-      
+    SPI3_Buf_Trunsmit->SPI3TransmitBuf[i] = REVERSE_LE_BE_u16(*data);
+   // SPI_Send_Data_u16(SPI3, REVERSE_LE_BE_u16(*data));
   }
+  
+  DMA_Cmd(DMA2_Channel2, DISABLE);
+  DMA_Cmd(DMA2_Channel1, DISABLE);
+  
+  DMA_SetCurrDataCounter(DMA2_Channel2,length); 
+  DMA_SetCurrDataCounter(DMA2_Channel1,length); 
+
+  DMA_Cmd(DMA2_Channel2, ENABLE);
+  DMA_Cmd(DMA2_Channel1, ENABLE);
+  SPI3_INT_BB_ON();
+      
+  
  
     /*
   u16 answer_to_BB=0;
@@ -120,9 +127,11 @@ void SPI3_Sent_Response_to_BB( u16 *data, u8 length, _INTERRUPTMONITOR *interrup
   * @param  None
   * @retval None
   */
-void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *settings_channel, _INTERRUPTMONITOR *interrupt){
+void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_channel, _INTERRUPTMONITOR *interrupt){
    
-   SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_RXNE, DISABLE);
+ //  SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_RXNE, DISABLE);
+ // DMA_Cmd(DMA2_Channel2, DISABLE);
+ // DMA_Cmd(DMA2_Channel1, DISABLE);
   
    u8 Error_happened=0;
    u8 Send_OK_answer=0;
@@ -130,15 +139,15 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
    u16 Value_of_settings_2;
    enum Command_from_BB Received_Command;
    u8 ask_buf[4];
-   u8 length;
+   u16 length;
    u16 tmp;
    
    
-    tmp= SPI3_Rec_Buf->SPI3ReciveBuf[0];
+    tmp= SPI3_Buf_->SPI3ReciveBuf[0];
     Value_of_settings = (u8) tmp; 
     Received_Command = (enum Command_from_BB) (tmp>>8);
     
-    Value_of_settings_2=SPI3_Rec_Buf->SPI3ReciveBuf[1];
+    Value_of_settings_2=SPI3_Buf_->SPI3ReciveBuf[1];
     
     
     
@@ -177,7 +186,9 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         case Read_Input_Switch_command://Switching_input send settings
           ask_buf[0]=(u8)Read_Input_Switch_command;
           ask_buf[1]=settings_channel->Switching_input;
-          length=1;
+            ask_buf[2]=00;
+            ask_buf[3]=00;
+            length=2;
           break;
         
         case Write_Amplification_factor_Af1_command://Aplification_factor_1 get and set settings
@@ -191,7 +202,9 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         case Read_Amplification_factor_Af1_command://Aplification_factor_1 send settings
           ask_buf[0]=(u8)Read_Amplification_factor_Af1_command;
           ask_buf[1]=settings_channel->Aplification_factor_1;
-          length=1;
+            ask_buf[2]=00;
+            ask_buf[3]=00;
+            length=2;
           break;
       
         case Write_Cutoff_Frequency_LPF_fcut_command://Frequency_cut_off get and set settings
@@ -205,7 +218,9 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         case Read_Cutoff_Frequency_LPF_fcut_command://Frequency_cut_off send settings
           ask_buf[0]=(u8)Read_Cutoff_Frequency_LPF_fcut_command;
           ask_buf[1]=settings_channel->Frequency_cut_off;
-          length=1;
+            ask_buf[2]=00;
+            ask_buf[3]=00;
+            length=2;
           break;
         
         case Write_Amplification_factor_Af2_command://Aplification_factor_2 get and set settings
@@ -219,7 +234,9 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         case Read_Amplification_factor_Af2_command://Aplification_factor_2 send settings
           ask_buf[0]=(u8)Read_Amplification_factor_Af2_command;
           ask_buf[1]=settings_channel->Aplification_factor_2;
-          length=1;
+            ask_buf[2]=00;
+            ask_buf[3]=00;
+            length=2;
           break;
       
         case Write_Sampling_Frequency_fd_command://Frequency_sampling or Frequency_descritisation  get and set settings
@@ -233,7 +250,9 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
         case Read_Sampling_Frequency_fd_command://Frequency_sampling or Frequency_descritisation send settings
           ask_buf[0]=(u8)Read_Sampling_Frequency_fd_command;
           ask_buf[1]=settings_channel->Frequency_sampling;
-          length=1;
+            ask_buf[2]=00;
+            ask_buf[3]=00;
+            length=2;
           break;
         
         default:
@@ -314,7 +333,9 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
           case Read_Control_Minus_Saturation_level_command:
             ask_buf[0]=(u8)Read_Control_Minus_Saturation_level_command;
             ask_buf[1]=(settings_channel->Control_Minus_Saturation_level_Af2<<1) | settings_channel->Control_Minus_Saturation_level_Af1;
-            length=1;
+            ask_buf[2]=00;
+            ask_buf[3]=00;
+            length=2;
             break;
             
          case Write_ID_Channel_number:
@@ -344,7 +365,9 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
           case Read_Ready_command:
             ask_buf[0]=(u8)Read_Ready_command;
             ask_buf[1]=0x80;
-            length=1;
+            ask_buf[2]=00;
+            ask_buf[3]=00;
+            length=2;
             //пока не выроботон критерий готовности или не готовности канала отправлять всегда готов
             break;
             
@@ -358,19 +381,23 @@ void SPI3_command_from_BB(_SPI3RECIVEBUF* SPI3_Rec_Buf, _SETTINGSOFCHANNEL *sett
       
       ask_buf[0]=00;
       ask_buf[1]=01;//answer OK
-      length=1;
+      ask_buf[2]=00;
+      ask_buf[3]=00;
+      length=2;
+
       
     } else if(Error_happened==1){
       
       ask_buf[0]=00;
       ask_buf[1]=02;//answer Error
-      length=1;
+      ask_buf[2]=00;
+      ask_buf[3]=00;
+      length=2;
       
     } 
      
-    SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_RXNE, ENABLE);
-    
-    SPI3_Sent_Response_to_BB( (u16 *)ask_buf, length, interrupt );
+  
+    SPI3_Sent_Response_to_BB( (u16 *)ask_buf, length,SPI3_Buf_, interrupt );
         
 }
 

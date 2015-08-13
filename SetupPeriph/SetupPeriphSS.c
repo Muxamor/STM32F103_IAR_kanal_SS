@@ -10,12 +10,19 @@
   ******************************************************************************
 */
 
-/* Includes ------------------------------------------------------------------*/
+/* Includes --------------
+----------------------------------------------------*/
+
 #include "stm32f10x.h"
+
+#include "structure.h"
+#include "global_variables.h"
+
 //#include "stm32f10x_rcc.h"
 //#include "stm32f10x_gpio.h"
 //#include "stm32f10x_usart.h"
 #include "SetupPeriphSS.h"
+
 
 
 
@@ -338,6 +345,60 @@ void SetupSPI3(void){
 }  
 
 /**
+  * @brief  This function setup DMA for SPI3 ports.
+  * @param  None
+  * @retval None
+*/
+
+extern uint16_t SPI3_DMA_Receive_BUF[2];
+extern uint16_t SPI3_DMA_Transmit_BUF[2];
+
+void Setup_DMA_SPI3(void){
+  DMA_InitTypeDef DMA_SPI_InitStructure;
+  
+  RCC_AHBPeriphClockCmd (RCC_AHBPeriph_DMA2,ENABLE);
+  
+  //DMA setup for TX SPI3
+  DMA_SPI_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(SPI3->DR);
+  DMA_SPI_InitStructure.DMA_MemoryBaseAddr = (uint32_t) SPI3_Buf->SPI3TransmitBuf; //(uint32_t)SPI3_DMA_Transmit_BUF;
+  DMA_SPI_InitStructure.DMA_DIR= DMA_DIR_PeripheralDST;
+  DMA_SPI_InitStructure.DMA_BufferSize = 2;
+  DMA_SPI_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_SPI_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_SPI_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+  DMA_SPI_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+  DMA_SPI_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_SPI_InitStructure.DMA_Priority = DMA_Priority_Medium;
+  DMA_SPI_InitStructure.DMA_M2M = DMA_M2M_Disable;
+  
+  DMA_Init(DMA2_Channel2, &DMA_SPI_InitStructure);
+  //NVIC_EnableIRQ( DMA2_Channel2_IRQn);
+ // DMA_ITConfig(DMA2_Channel2, DMA_IT_TC, ENABLE);
+  SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Tx, ENABLE);
+ 
+  
+  //DMA setup for RX SPI3
+  DMA_SPI_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(SPI3->DR);
+  DMA_SPI_InitStructure.DMA_MemoryBaseAddr = (uint32_t) SPI3_Buf->SPI3ReciveBuf;//(uint32_t)SPI3_DMA_Receive_BUF;
+  DMA_SPI_InitStructure.DMA_DIR= DMA_DIR_PeripheralSRC;
+  DMA_SPI_InitStructure.DMA_BufferSize = 2;
+  DMA_SPI_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_SPI_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_SPI_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+  DMA_SPI_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+  DMA_SPI_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_SPI_InitStructure.DMA_Priority = DMA_Priority_Medium;
+  DMA_SPI_InitStructure.DMA_M2M = DMA_M2M_Disable;
+  
+  DMA_Init(DMA2_Channel1, &DMA_SPI_InitStructure);
+  NVIC_EnableIRQ( DMA2_Channel1_IRQn);
+  DMA_ITConfig(DMA2_Channel1, DMA_IT_TC, ENABLE);
+  SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Rx, ENABLE);
+ 
+}
+
+
+/**
   * @brief  This function setup settings Timers .
   * @param  None
   * @retval None
@@ -500,18 +561,18 @@ void SetupInterrupt(void){
  
  /*----------------------------------------------------------------------------*/
   
-  
+
    /*-------------------------Setup interrupt SPI3 port.-----------------------*/   
-  NVCI_Init_Struct.NVIC_IRQChannel=UART4_IRQn; 
-  NVCI_Init_Struct.NVIC_IRQChannelPreemptionPriority=13;/*Set priority ¹14 from 0..15*/
-  NVCI_Init_Struct.NVIC_IRQChannelSubPriority=0;
+ /* NVCI_Init_Struct.NVIC_IRQChannel=UART4_IRQn; 
+  NVCI_Init_Struct.NVIC_IRQChannelPreemptionPriority=13;*//*Set priority ¹14 from 0..15*/
+ /* NVCI_Init_Struct.NVIC_IRQChannelSubPriority=0;
   NVCI_Init_Struct.NVIC_IRQChannelCmd= ENABLE;
   NVIC_Init(&NVCI_Init_Struct);
 
   SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_RXNE, ENABLE);
   SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_TXE, ENABLE);
  
-  NVIC_EnableIRQ(SPI3_IRQn);          
+  NVIC_EnableIRQ(SPI3_IRQn);  */        
 //  NVIC_DisableIRQ(SPI3_IRQn);
  /*----------------------------------------------------------------------------*/
   

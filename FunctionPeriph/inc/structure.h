@@ -13,6 +13,24 @@
 	((((u16)(A) & 0xff00) >> 8) | \
              (((u16)(A) & 0x00ff) << 8))
 
+              
+#define SIZE_SPI3_BUF 2
+typedef struct{
+
+  u16 SPI3ReciveBuf[SIZE_SPI3_BUF];
+  u16 SPI3TransmitBuf[SIZE_SPI3_BUF];
+  u8 SPI3_Buf_Len;
+  
+} _SPI3BUF;
+
+#define SIZE_UART_BUF 30
+
+typedef struct{
+
+  u8 UART_Recive_Buf[SIZE_UART_BUF];
+  u8 UART_Buf_Len;
+  
+} _UARTBUF;
 
  typedef struct{
    
@@ -26,6 +44,9 @@
   
   
 } _INTERRUPTMONITOR;
+
+
+
 
 
  typedef struct{
