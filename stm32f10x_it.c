@@ -188,7 +188,7 @@ void EXTI0_IRQHandler(void){
     
     if(Settings_Of_Channel->Freq_sampling_count_down_for_UART==0){
       Interrupt_Monitor->ADC_AD17_data_ready_interrupt=1;
-      Settings_Of_Channel->Freq_sampling_count_down_for_UART=Settings_Of_Channel->Frequency_sampling_count_for_UART;
+     Settings_Of_Channel->Freq_sampling_count_down_for_UART=Settings_Of_Channel->Frequency_sampling_count_for_UART;
     }else{
       Settings_Of_Channel->Freq_sampling_count_down_for_UART--;
     }
@@ -304,7 +304,7 @@ void DMA2_Channel2_IRQHandler (void){
 void DMA2_Channel1_IRQHandler (void){
   
   if(DMA_GetITStatus(DMA2_FLAG_TC1) == SET){
-        DMA_ClearITPendingBit(DMA2_FLAG_TC1);
+    DMA_ClearITPendingBit(DMA2_FLAG_TC1);
     SPI3_INT_BB_OFF();
     Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
     

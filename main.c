@@ -18,11 +18,14 @@ _UARTBUF uart_buf, *UART_Buf=&uart_buf;
 _INTERRUPTMONITOR interrupt_monitor, *Interrupt_Monitor=&interrupt_monitor ;
 _SETTINGSOFCHANNEL settings_of_channel, *Settings_Of_Channel=&settings_of_channel; 
  //RCC_ClocksTypeDef clckcheck,  *CLlock_get=&clckcheck;//для проверки настроенной частоты
+uint16_t *spi3_dma_receive_buf_addr = NULL;
+uint16_t *spi3_dma_transmit_buf_addr = NULL;
 
 void main()
 { 
     
-
+  spi3_dma_receive_buf_addr = SPI3_Buf->SPI3ReciveBuf;
+  spi3_dma_transmit_buf_addr = SPI3_Buf->SPI3TransmitBuf;
  /*----------------------------Setup Periphery--------------------------------*/
   SetupClock();
   SetupLED();
@@ -33,19 +36,27 @@ void main()
   SetupSPI3();
  
   Setup_DMA_SPI3();
-
-    // настрйока DMA потом переделать в прирывание по чип селекту
- DMA_SetCurrDataCounter(DMA2_Channel2,2); 
- DMA_SetCurrDataCounter(DMA2_Channel1,2); 
-
- DMA_Cmd(DMA2_Channel2, ENABLE);
- DMA_Cmd(DMA2_Channel1, ENABLE);
-   /*---------------------------------------------------------------------------*/ 
- 
- SetupTimers();
+  SetupTimers();
   Setup_RTC();
   SetupInterrupt();
-   
+  /*
+  SPI3_INT_BB_ON();
+  SPI3_INT_BB_OFF();
+  SPI3_INT_BB_ON();
+  SPI3_INT_BB_OFF();
+  SPI3_INT_BB_ON();
+  SPI3_INT_BB_OFF();
+  SPI3_INT_BB_ON();
+  SPI3_INT_BB_OFF();
+  SPI3_INT_BB_ON();
+  SPI3_INT_BB_OFF();
+  SPI3_INT_BB_ON();
+  SPI3_INT_BB_OFF();
+  SPI3_INT_BB_ON();
+  SPI3_INT_BB_OFF();
+  SPI3_INT_BB_ON();
+  SPI3_INT_BB_OFF();
+   */
  // Setup_IWDG();
  // RCC_GetClocksFreq(CLlock_get);//для проверки настроенной частоты
   
@@ -102,19 +113,30 @@ void main()
       Interrupt_Monitor->UART_Interrup=0;
       uart_terminal_command(UART_Buf, Settings_Of_Channel );
     }
+    
+    if (Interrupt_Monitor->ADC_AD17_data_ready_interrupt==1 && Settings_Of_Channel->Start_stop==1 && Settings_Of_Channel->Port_to_send_data_SPI3_or_UART==0){
+     
+      
+    
+    }
 
     if(Interrupt_Monitor->ADC_AD17_data_ready_interrupt==1 && Settings_Of_Channel->Start_stop==1 && Settings_Of_Channel->Port_to_send_data_SPI3_or_UART==1){
       Interrupt_Monitor->ADC_AD17_data_ready_interrupt=0;
-      u16 data1;
+      u8 data1;
       u8 data2;
-      
-      SPI_Send_Data_u16( SPI1, 0x00 );
-      data1=SPI_Receive_Data(SPI1); 
+      u8 data3;
+      CS_CS2_1_DA17_ON();
+      SPI_Send_Data_u8( SPI1, 0x00 );
+      data1=SPI_Receive_Data(SPI1);
       
       SPI_Send_Data_u8( SPI1, 0x00 );
       data2=SPI_Receive_Data(SPI1);
       
-      sprintf((char *)str, "ADC: %X%X", data1,data2);
+      SPI_Send_Data_u8( SPI1, 0x00 );
+      data3=SPI_Receive_Data(SPI1);
+      
+      CS_CS2_1_DA17_OFF();
+      sprintf((char *)str, "ADC: 0x%X 0x%X 0x%X", data1,data2, data3);
       UART_SendString(UART4, str);
       
     }

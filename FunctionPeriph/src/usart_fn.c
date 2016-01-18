@@ -91,7 +91,7 @@ void uart_terminal_command(_UARTBUF *recive_buf, _SETTINGSOFCHANNEL *settings_ch
     
  while(lenght_recive_buf < recive_buf->UART_Buf_Len){
    
-    for(/*Empty*/; *str_uart == ' ' && i < recive_buf->UART_Buf_Len ; str_uart++ , lenght_recive_buf++ ); // remove the SPACE from the recive UARt buffer
+    for(/*Empty*/; *str_uart == ' ' && lenght_recive_buf< recive_buf->UART_Buf_Len ; str_uart++ , lenght_recive_buf++ ); // remove the SPACE from the receive UARt buffer
    
     for(i=0 ; *str_uart != ' ' && i < recive_buf->UART_Buf_Len ; i++, str_uart++ , lenght_recive_buf++ ){ // read the command
       tmp_buf[i]=*str_uart;
@@ -130,7 +130,7 @@ void uart_terminal_command(_UARTBUF *recive_buf, _SETTINGSOFCHANNEL *settings_ch
     
           tmp_buf[i]='\0';
           
-          for( i=0; tmp_buf[i] != '\0'; i++ ){   // check that the we get the number
+          for( i=0; tmp_buf[i] != '\0'; i++ ){   // check that  we get the number
             if( '0' > tmp_buf[i] || tmp_buf[i]  > '9' ){
               error_happened=1;
               break;

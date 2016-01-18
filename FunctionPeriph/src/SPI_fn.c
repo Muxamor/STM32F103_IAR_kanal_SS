@@ -41,13 +41,13 @@ void SPI_Send_Data_u16( SPI_TypeDef* SPIx, uint16_t Data ){
   * @param  None
   * @retval None
   */
-void SPI_Send_Data_u8( SPI_TypeDef* SPIx, uint8_t Data ){
+void  SPI_Send_Data_u8( SPI_TypeDef* SPIx, uint8_t Data ){
   
   while ( SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_BSY) == SET );
   
    //!!!!!!!!!!!!!!!!!!!Проверить работает или нет !!!!!!!!!!!!!!!!!!!!!!!!!!
   // Возможно нужно включать выключать SPI  при перенастройки SPI_Cmd(SPI2,ENABLE);SPI_Cmd(SPI2,DISABLE);
-  SPI_DataSizeConfig(SPIx, SPI_DataSize_8b);
+ // SPI_DataSizeConfig(SPIx, SPI_DataSize_8b);
 
   while ( SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_BSY) == SET );
   

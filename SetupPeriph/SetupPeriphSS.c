@@ -153,7 +153,7 @@ void SetupSPI1(void){
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
    
-  GPIO_ResetBits(GPIOA, GPIO_Pin_4); //On chip select for DA17
+  GPIO_SetBits(GPIOA, GPIO_Pin_4); //OFF chip select for DA17
   /* For ON/OFF Chip selest for DA17  need to use function:                    */
   /* CS_CS2_1_DA17_OFF() CS_CS2_1_DA17_ON()  // OFF/ON chip select for DA17 IC */
   
@@ -173,7 +173,7 @@ void SetupSPI1(void){
   //Setup SPI1
   SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
   SPI_InitStructure.SPI_Mode = SPI_Mode_Master; 
-  SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b; // for DA17=24b for one porsel
+  SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b; // for DA17=24b for one porsel
   SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low; 
   SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
   SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
@@ -350,8 +350,10 @@ void SetupSPI3(void){
   * @retval None
 */
 
-extern uint16_t SPI3_DMA_Receive_BUF[2];
-extern uint16_t SPI3_DMA_Transmit_BUF[2];
+//extern uint16_t SPI3_DMA_Receive_BUF[2];
+//extern uint16_t SPI3_DMA_Transmit_BUF[2];
+extern  uint16_t *spi3_dma_receive_buf_addr;
+extern  uint16_t *spi3_dma_transmit_buf_addr;
 
 void Setup_DMA_SPI3(void){
   DMA_InitTypeDef DMA_SPI_InitStructure;
@@ -360,7 +362,7 @@ void Setup_DMA_SPI3(void){
   
   //DMA setup for TX SPI3
   DMA_SPI_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(SPI3->DR);
-  DMA_SPI_InitStructure.DMA_MemoryBaseAddr = (uint32_t) SPI3_Buf->SPI3TransmitBuf; //(uint32_t)SPI3_DMA_Transmit_BUF;
+  DMA_SPI_InitStructure.DMA_MemoryBaseAddr = (uint32_t) spi3_dma_transmit_buf_addr; //SPI3_Buf->SPI3TransmitBuf; //(uint32_t)SPI3_DMA_Transmit_BUF;
   DMA_SPI_InitStructure.DMA_DIR= DMA_DIR_PeripheralDST;
   DMA_SPI_InitStructure.DMA_BufferSize = 2;
   DMA_SPI_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
@@ -379,7 +381,7 @@ void Setup_DMA_SPI3(void){
   
   //DMA setup for RX SPI3
   DMA_SPI_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(SPI3->DR);
-  DMA_SPI_InitStructure.DMA_MemoryBaseAddr = (uint32_t) SPI3_Buf->SPI3ReciveBuf;//(uint32_t)SPI3_DMA_Receive_BUF;
+  DMA_SPI_InitStructure.DMA_MemoryBaseAddr = (uint32_t) spi3_dma_receive_buf_addr;//SPI3_Buf->SPI3ReciveBuf;//(uint32_t)SPI3_DMA_Receive_BUF;
   DMA_SPI_InitStructure.DMA_DIR= DMA_DIR_PeripheralSRC;
   DMA_SPI_InitStructure.DMA_BufferSize = 2;
   DMA_SPI_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
@@ -394,6 +396,12 @@ void Setup_DMA_SPI3(void){
   NVIC_EnableIRQ( DMA2_Channel1_IRQn);
   DMA_ITConfig(DMA2_Channel1, DMA_IT_TC, ENABLE);
   SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Rx, ENABLE);
+  
+  DMA_SetCurrDataCounter(DMA2_Channel2,2); 
+  DMA_SetCurrDataCounter(DMA2_Channel1,2); 
+
+  DMA_Cmd(DMA2_Channel2, ENABLE);
+  DMA_Cmd(DMA2_Channel1, ENABLE);
  
 }
 

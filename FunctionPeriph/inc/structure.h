@@ -56,10 +56,10 @@ typedef struct{
   u8 Aplification_factor_2;
   u8 Frequency_cut_off;
   u8 Switching_input;
-  u8 Frequency_sampling;
-  u16 Frequency_sampling_number;
-  u8 Frequency_sampling_count_for_UART;
-  u8 Freq_sampling_count_down_for_UART;
+  u8 Frequency_sampling;//!!
+  u16 Frequency_sampling_number;//!!
+  u8 Frequency_sampling_count_for_UART;//!!
+  u8 Freq_sampling_count_down_for_UART;//!!
   u16 Saturation_Level_Af1_plus;
   u16 Saturation_Level_Af1_minus;
   u32 Saturation_Level_Af2_plus;
