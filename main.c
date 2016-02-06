@@ -131,7 +131,7 @@ void main()
       
       SPI_Send_Data_u8( SPI1, 0x00 );
       data2=SPI_Receive_Data(SPI1);
-      
+       
       SPI_Send_Data_u8( SPI1, 0x00 );
       data3=SPI_Receive_Data(SPI1);
       

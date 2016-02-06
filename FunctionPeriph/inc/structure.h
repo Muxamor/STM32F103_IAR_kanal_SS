@@ -42,24 +42,21 @@ typedef struct{
   u8 :3;
 
   
-  
 } _INTERRUPTMONITOR;
 
 
-
-
-
  typedef struct{
-  
   u8 Numer_of_Channel;
   u8 Aplification_factor_1;
   u8 Aplification_factor_2;
   u8 Frequency_cut_off;
   u8 Switching_input;
-  u8 Frequency_sampling;//!!
-  u16 Frequency_sampling_number;//!!
-  u8 Frequency_sampling_count_for_UART;//!!
-  u8 Freq_sampling_count_down_for_UART;//!!
+  u8 Frequency_sampling;//Fd
+  u16 Frequency_sampling_value;//Fd
+  u8 Frequency_software_decimation;//Fres
+  u8 Frequency_software_decimation_count;//Fres
+  u8 Frequency_software_decimation_count_down;//Fres
+  u16 Frequency_sampling_data_flow;//Fdata
   u16 Saturation_Level_Af1_plus;
   u16 Saturation_Level_Af1_minus;
   u32 Saturation_Level_Af2_plus;
@@ -85,6 +82,7 @@ enum Command_from_BB {Write_Input_Switch_command=0x01,
                       Read_Amplification_factor_Af2_command=0x08,
                       Write_Sampling_Frequency_fd_command=0x09,
                       Read_Sampling_Frequency_fd_command=0x0A,
+                     
                       Write_Saturation_Level_Af1_command=0x0B,
                       Read_Saturation_Level_Af1_command=0x0C,
                       Write_Saturation_Level_Af2_plus_command=0x0D,
@@ -100,8 +98,11 @@ enum Command_from_BB {Write_Input_Switch_command=0x01,
                       
                       Read_Ready_command=0x20,
                       START_STOP_command=0x21,
-                   
                       
+                      Write_Software_Decimation_command=0x31,
+                      Read_Software_Decimation_command=0x32,
+                      Read_Frequenc_data_flow_command=0x34,
+                   
                       MAX_COMMAND
                       };
 

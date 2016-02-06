@@ -156,11 +156,13 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
       if(Value_of_settings==0x01){
         
         settings_channel->Start_stop=1;//Start
+        NVIC_EnableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
         Send_OK_answer=1;
         
       }else if(Value_of_settings==0x04){
         
         settings_channel->Start_stop=0;//STOP
+        NVIC_DisableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
         Send_OK_answer=1;
         
       }else {
@@ -259,7 +261,7 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
           Error_happened=1;
       }
       
-    }else if( Received_Command >= Write_Saturation_Level_Af1_command ||  Received_Command <= Read_Ready_command){
+    }else if( Received_Command >= Write_Saturation_Level_Af1_command ||  Received_Command <= Read_Frequenc_data_flow_command){
       
       switch (Received_Command){
               
@@ -370,6 +372,28 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             length=2;
             //пока не выроботон критерий готовности или не готовности канала отправлять всегда готов
             break;
+                      
+          case Write_Software_Decimation_command://
+            if(Set_Settings_Fres(Value_of_settings,settings_channel ) == 1){
+              Error_happened=1;
+            }else{
+              settings_channel->Frequency_software_decimation = Value_of_settings;
+              Send_OK_answer=1;
+            }
+            break;
+          case Read_Software_Decimation_command://
+            ask_buf[0]=(u8)Read_Software_Decimation_command;
+            ask_buf[1]=settings_channel->Frequency_software_decimation;
+              ask_buf[2]=00;
+              ask_buf[3]=00;
+              length=2;
+            break;
+            
+          case Read_Frequenc_data_flow_command:
+             ask_buf[0]=(u8)Read_Frequenc_data_flow_command;
+             ask_buf[1]=0x00;
+             ask_buf[2]=(u8) ((settings_channel->Frequency_sampling_data_flow)>>8 );
+             ask_buf[2]=(u8) (settings_channel->Frequency_sampling_data_flow);
             
             default:
               Error_happened=1;

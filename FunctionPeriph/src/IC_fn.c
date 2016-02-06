@@ -397,6 +397,13 @@ u8 Set_Settings_DA8(u8 t){
 }  
 
 
+  u8 Frequency_sampling;//Fd
+  u8 Frequency_software_decimation;//Fres
+  u8 Frequency_software_decimation_count;//Fres
+  u8 Frequency_software_decimation_count_down;//Fres
+  u16 Frequency_sampling_data_flow;//Fdata
+
+
 
 /**
   * @brief  This function set the sampling frequency.
@@ -407,48 +414,87 @@ u8 Set_Settings_FD(u8 t, _SETTINGSOFCHANNEL *channel_settings){
   
   switch(t){
     case 0:
-      channel_settings->Frequency_sampling_number=64;
-      channel_settings->Frequency_sampling_count_for_UART=0;//  show all counts
-      channel_settings->Freq_sampling_count_down_for_UART=0;
+      channel_settings->Frequency_sampling_value=64;
       break;
     case 1:
-      channel_settings->Frequency_sampling_number=128;
-      channel_settings->Frequency_sampling_count_for_UART=1;//  show every 2
-      channel_settings->Freq_sampling_count_down_for_UART=1;
+      channel_settings->Frequency_sampling_value=128;
       break;
     case 2:
-      channel_settings->Frequency_sampling_number=256;
-      channel_settings->Frequency_sampling_count_for_UART=3;//  show every 4
-      channel_settings->Freq_sampling_count_down_for_UART=3;
+      channel_settings->Frequency_sampling_value=256;
       break;
     case 3:
-      channel_settings->Frequency_sampling_number=512;
-      channel_settings->Frequency_sampling_count_for_UART=7;//  show every 8
-      channel_settings->Freq_sampling_count_down_for_UART=7;
+     channel_settings->Frequency_sampling_value=512;
       break;
     case 4:
-      channel_settings->Frequency_sampling_number=1024;
-      channel_settings->Frequency_sampling_count_for_UART=15;//  show every 16
-      channel_settings->Freq_sampling_count_down_for_UART=15;
+      channel_settings->Frequency_sampling_value=1024;
       break;
-    case 5:
-      channel_settings->Frequency_sampling_number=2048;
-      channel_settings->Frequency_sampling_count_for_UART=31;//  show every 32
-      channel_settings->Freq_sampling_count_down_for_UART=31;
-      break;
+   /* case 5:
+      channel_settings->Frequency_sampling_value=2048;
+      break;*/
     case 6:
-      channel_settings->Frequency_sampling_number=4096;
-      channel_settings->Frequency_sampling_count_for_UART=63;//  show every 64
-      channel_settings->Freq_sampling_count_down_for_UART=63;
+      channel_settings->Frequency_sampling_value=4096;
       break;
-  default:
-    return 1;
+      
+      default:
+      return 1;
   }
+  
+  channel_settings->Frequency_sampling_data_flow = channel_settings->Frequency_sampling_value / channel_settings->Frequency_software_decimation_count;
  
   return 0;
 
 
 }
+
+
+/**
+  * @brief  This function set the software devicamton.
+  * @param  None
+  * @retval None
+  */
+u8 Set_Settings_Fres(u8 t, _SETTINGSOFCHANNEL *channel_settings){
+  
+  switch(t){
+    case 0:
+      channel_settings->Frequency_software_decimation_count=1;
+      channel_settings->Frequency_software_decimation_count_down=1;
+      break;
+    case 1:
+      channel_settings->Frequency_software_decimation_count=2;
+      channel_settings->Frequency_software_decimation_count_down=2;
+      break;
+    case 2:
+      channel_settings->Frequency_software_decimation_count=4;
+      channel_settings->Frequency_software_decimation_count_down=4;
+      break;
+    case 3:
+      channel_settings->Frequency_software_decimation_count=8;
+      channel_settings->Frequency_software_decimation_count_down=8;
+      break;
+    case 4:
+      channel_settings->Frequency_software_decimation_count=16;
+      channel_settings->Frequency_software_decimation_count_down=16;
+      break;
+    case 5:
+      channel_settings->Frequency_software_decimation_count=32;
+      channel_settings->Frequency_software_decimation_count_down=32;
+      break;
+    case 6:
+      channel_settings->Frequency_software_decimation_count=64;
+      channel_settings->Frequency_software_decimation_count_down=64;
+      break;
+      
+      default:
+      return 1;
+  }
+ 
+  channel_settings->Frequency_sampling_data_flow = channel_settings->Frequency_sampling_value / channel_settings->Frequency_software_decimation_count;
+  return 0;
+
+
+}
+
+
   
 
 
@@ -475,8 +521,10 @@ u8 Set_Default_Settings(_SETTINGSOFCHANNEL *channel_settings){
    channel_settings->Start_stop=0;
    // Freq sampling =0 -- show all counts
    channel_settings->Frequency_sampling=0;
-   channel_settings->Frequency_sampling_number=64;
-   channel_settings->Frequency_sampling_count_for_UART=0;
+   channel_settings->Frequency_sampling_value=64;
+   channel_settings->Frequency_software_decimation=0;
+   channel_settings->Frequency_software_decimation_count=1;//Fres
+   channel_settings->Frequency_software_decimation_count_down=1;//Fres
    //SPI port to send data from ADC
    channel_settings->Port_to_send_data_SPI3_or_UART=0;
     return 0;   

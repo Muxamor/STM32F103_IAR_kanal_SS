@@ -186,17 +186,17 @@ void EXTI0_IRQHandler(void){
   
   if( EXTI_GetITStatus(EXTI_Line0) != RESET ){
     
-    if(Settings_Of_Channel->Freq_sampling_count_down_for_UART==0){
+    Settings_Of_Channel->Frequency_software_decimation_count_down--;
+       
+    if(Settings_Of_Channel->Frequency_software_decimation_count_down==0){
       Interrupt_Monitor->ADC_AD17_data_ready_interrupt=1;
-     Settings_Of_Channel->Freq_sampling_count_down_for_UART=Settings_Of_Channel->Frequency_sampling_count_for_UART;
-    }else{
-      Settings_Of_Channel->Freq_sampling_count_down_for_UART--;
+      Settings_Of_Channel->Frequency_software_decimation_count_down=Settings_Of_Channel->Frequency_software_decimation_count;
     }
-   
     
   }
   EXTI_ClearITPendingBit(EXTI_Line0);
 }
+
 
 
 //extern _UARTBUF *UART_Buf;
