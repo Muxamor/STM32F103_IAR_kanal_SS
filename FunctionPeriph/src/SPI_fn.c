@@ -384,16 +384,18 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
           case Read_Software_Decimation_command://
             ask_buf[0]=(u8)Read_Software_Decimation_command;
             ask_buf[1]=settings_channel->Frequency_software_decimation;
-              ask_buf[2]=00;
-              ask_buf[3]=00;
-              length=2;
+            ask_buf[2]=00;
+            ask_buf[3]=00;
+            length=2;
             break;
-            
+             
           case Read_Frequenc_data_flow_command:
-             ask_buf[0]=(u8)Read_Frequenc_data_flow_command;
-             ask_buf[1]=0x00;
-             ask_buf[2]=(u8) ((settings_channel->Frequency_sampling_data_flow)>>8 );
-             ask_buf[2]=(u8) (settings_channel->Frequency_sampling_data_flow);
+            ask_buf[0]=(u8)Read_Frequenc_data_flow_command;
+            ask_buf[1]=0x00;
+            ask_buf[2]=(u8) ((settings_channel->Frequency_sampling_data_flow)>>8 );
+            ask_buf[3]=(u8) (settings_channel->Frequency_sampling_data_flow);
+            length=2;
+            break;
             
             default:
               Error_happened=1;

@@ -310,8 +310,8 @@ void DMA2_Channel1_IRQHandler (void){
     
    
     if(SPI3_Buf->SPI3ReciveBuf[0]==0x0000){
-      
-      DMA_Cmd(DMA2_Channel2, DISABLE);
+      /*
+     DMA_Cmd(DMA2_Channel2, DISABLE);
       DMA_Cmd(DMA2_Channel1, DISABLE);
   
       DMA_SetCurrDataCounter(DMA2_Channel2,2); 
@@ -319,10 +319,10 @@ void DMA2_Channel1_IRQHandler (void){
 
       DMA_Cmd(DMA2_Channel2, ENABLE);
       DMA_Cmd(DMA2_Channel1, ENABLE);
-
+*/
       SPI3_Buf->SPI3_Buf_Len=0;
                     
-    } else{
+    }else{
       
       Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=1; 
     

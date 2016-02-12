@@ -352,8 +352,8 @@ void SetupSPI3(void){
 
 //extern uint16_t SPI3_DMA_Receive_BUF[2];
 //extern uint16_t SPI3_DMA_Transmit_BUF[2];
-extern  uint16_t *spi3_dma_receive_buf_addr;
-extern  uint16_t *spi3_dma_transmit_buf_addr;
+ extern  uint16_t *spi3_dma_receive_buf_addr;
+ extern  uint16_t *spi3_dma_transmit_buf_addr;
 
 void Setup_DMA_SPI3(void){
   DMA_InitTypeDef DMA_SPI_InitStructure;
@@ -397,8 +397,8 @@ void Setup_DMA_SPI3(void){
   DMA_ITConfig(DMA2_Channel1, DMA_IT_TC, ENABLE);
   SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Rx, ENABLE);
   
-  DMA_SetCurrDataCounter(DMA2_Channel2,2); 
-  DMA_SetCurrDataCounter(DMA2_Channel1,2); 
+  DMA_SetCurrDataCounter(DMA2_Channel2,13); 
+  DMA_SetCurrDataCounter(DMA2_Channel1,13); 
 
   DMA_Cmd(DMA2_Channel2, ENABLE);
   DMA_Cmd(DMA2_Channel1, ENABLE);

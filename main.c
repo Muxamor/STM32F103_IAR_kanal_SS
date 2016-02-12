@@ -20,12 +20,45 @@ _SETTINGSOFCHANNEL settings_of_channel, *Settings_Of_Channel=&settings_of_channe
  //RCC_ClocksTypeDef clckcheck,  *CLlock_get=&clckcheck;//для проверки настроенной частоты
 uint16_t *spi3_dma_receive_buf_addr = NULL;
 uint16_t *spi3_dma_transmit_buf_addr = NULL;
+_PACKETDATAADC24 dataADC_FIFO[3] = {0};
+u16 rx_test_ADC[13] = {0};
 
-void main()
-{ 
-    
-  spi3_dma_receive_buf_addr = SPI3_Buf->SPI3ReciveBuf;
-  spi3_dma_transmit_buf_addr = SPI3_Buf->SPI3TransmitBuf;
+ 
+void main(){ 
+  
+  dataADC_FIFO[0].number_packets = 0x2004;
+  dataADC_FIFO[0].number_seconds = 0x3004;
+  dataADC_FIFO[0].serial_number_unit = 0x4004;
+  dataADC_FIFO[0].number_channel = 0x22;
+  dataADC_FIFO[0].SID_number_channel= 0x33;
+  dataADC_FIFO[0].value_Fcut = 0x44;
+  dataADC_FIFO[0].value_Fd = 0x55;
+  dataADC_FIFO[0].value_Fdata = 0x5004;
+  dataADC_FIFO[0].input_coordinates = 0x22;
+  dataADC_FIFO[0].input_directon_X_Y_Z = 0x33;
+  dataADC_FIFO[0].KEMS_channel = 0x6004;
+  dataADC_FIFO[0].error_flug = 0x01; 
+  dataADC_FIFO[0].error_saturation = 1;
+  dataADC_FIFO[0].error_saturation_ADC24 = 0;
+  dataADC_FIFO[0].flag_KU1 = 0;
+  dataADC_FIFO[0].flag_KU2 = 0;
+  dataADC_FIFO[0].flag_no_correct_data = 0;
+  dataADC_FIFO[0].automatic_change_KU1_KU2 = 0;
+  dataADC_FIFO[0].work_mode = 0;
+  dataADC_FIFO[0].data_ADC24[0].factor_KU1 = 0x2;
+  dataADC_FIFO[0].data_ADC24[0].factor_KU2 = 0x3;
+  dataADC_FIFO[0].data_ADC24[0].ADC24_data0 = 0x07;
+  dataADC_FIFO[0].data_ADC24[0].ADC24_data1 = 0x08;
+  dataADC_FIFO[0].data_ADC24[0].ADC24_data2 = 0x09;
+  dataADC_FIFO[0].data_ADC24[1].factor_KU1 = 0x4;
+  dataADC_FIFO[0].data_ADC24[1].factor_KU2 = 0x5;
+  dataADC_FIFO[0].data_ADC24[1].ADC24_data0 = 0x02;
+  dataADC_FIFO[0].data_ADC24[1].ADC24_data1 = 0x03;
+  dataADC_FIFO[0].data_ADC24[1].ADC24_data2 = 0x04;
+  
+  
+  spi3_dma_receive_buf_addr = (uint16_t * )(rx_test_ADC);//SPI3_Buf->SPI3ReciveBuf;
+  spi3_dma_transmit_buf_addr = (uint16_t * )(dataADC_FIFO); // SPI3_Buf->SPI3TransmitBuf; 
  /*----------------------------Setup Periphery--------------------------------*/
   SetupClock();
   SetupLED();
@@ -59,7 +92,7 @@ void main()
    */
  // Setup_IWDG();
  // RCC_GetClocksFreq(CLlock_get);//для проверки настроенной частоты
-  
+ 
   Settings_Of_Channel->Numer_of_Channel = Read_Number_of_Channel();
  /*---------------------------------------------------------------------------*/   
 
@@ -102,12 +135,16 @@ void main()
  
   while(1) {
     
+    
     IWDG_ReloadCounter();
     
     if(Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel==1){
       Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=0;
       SPI3_command_from_BB(SPI3_Buf, Settings_Of_Channel, Interrupt_Monitor);
+
+
     }
+    
       
     if(Interrupt_Monitor->UART_Interrup==1){
       Interrupt_Monitor->UART_Interrup=0;

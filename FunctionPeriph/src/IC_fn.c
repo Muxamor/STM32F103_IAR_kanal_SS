@@ -525,6 +525,7 @@ u8 Set_Default_Settings(_SETTINGSOFCHANNEL *channel_settings){
    channel_settings->Frequency_software_decimation=0;
    channel_settings->Frequency_software_decimation_count=1;//Fres
    channel_settings->Frequency_software_decimation_count_down=1;//Fres
+   channel_settings->Frequency_sampling_data_flow = (channel_settings->Frequency_sampling_value)/(channel_settings->Frequency_software_decimation_count);
    //SPI port to send data from ADC
    channel_settings->Port_to_send_data_SPI3_or_UART=0;
     return 0;   

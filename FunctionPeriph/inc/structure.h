@@ -72,6 +72,54 @@ typedef struct{
   u8 time_test_LED;
 } _SETTINGSOFCHANNEL;
 
+
+typedef struct{
+  
+  u8 ADC24_data0;
+  u8 factor_KU1:4;
+  u8 factor_KU2:4;
+  
+  u8 ADC24_data2;
+  u8 ADC24_data1;
+
+}_ONECOUNTDATAADC24;
+
+
+typedef struct{
+
+  u16 number_packets;
+  u16 number_seconds;
+  u16 serial_number_unit;
+  
+  u8  SID_number_channel;
+  u8  number_channel;
+  
+  u8  value_Fd;
+  u8  value_Fcut;
+  
+  u16 value_Fdata;
+  
+  u8  input_directon_X_Y_Z;
+  u8  input_coordinates;
+  
+  u16 KEMS_channel;
+  
+  u8:1;
+  u8  error_saturation:1;
+  u8  error_saturation_ADC24:1;
+  u8  flag_KU1:1;
+  u8  flag_KU2:1;
+  u8  flag_no_correct_data:1;
+  u8  automatic_change_KU1_KU2:1;
+  u8  work_mode:1;
+  u8  error_flug;
+ 
+  _ONECOUNTDATAADC24 data_ADC24[4096];
+  
+}_PACKETDATAADC24;
+
+
+
 enum Command_from_BB {Write_Input_Switch_command=0x01, 
                       Read_Input_Switch_command=0x02,
                       Write_Amplification_factor_Af1_command=0x03,
