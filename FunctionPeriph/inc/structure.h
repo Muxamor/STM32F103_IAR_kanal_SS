@@ -70,17 +70,23 @@ typedef struct{
   
   
   u8 time_test_LED;
+  
+  u8 SID_number_of_channel;
+  u16 KEMS_off_channel;
+  
+  
 } _SETTINGSOFCHANNEL;
+
 
 
 typedef struct{
   
-  u8 ADC24_data0;
+  u8 ADC24_data2;
   u8 factor_KU1:4;
   u8 factor_KU2:4;
   
-  u8 ADC24_data2;
   u8 ADC24_data1;
+  u8 ADC24_data0;
 
 }_ONECOUNTDATAADC24;
 
@@ -114,9 +120,28 @@ typedef struct{
   u8  work_mode:1;
   u8  error_flug;
  
-  _ONECOUNTDATAADC24 data_ADC24[4096];
+  _ONECOUNTDATAADC24 data_ADC24_per_sec[4096];
   
 }_PACKETDATAADC24;
+              
+              
+#define SIZE_FIFO_BUFFER 3
+
+typedef struct{
+              
+  _PACKETDATAADC24 fifo_bufADC24[SIZE_FIFO_BUFFER];
+  u8 write_fifo;
+  u8 read_fifo;
+    
+  u8 new_circle:1;  // new circle in FIFO buffer
+  u8 miss_parsel:1; //miss parcel 
+ // u8 new_data_packets:1; // =1 new parsel 0= old parsel
+  u8:6;
+  
+  u8 quant_paresl_ready_send;        
+  u16 count_data_written_per_buf;
+              
+}_FIFO_BUF_DATA;
 
 
 

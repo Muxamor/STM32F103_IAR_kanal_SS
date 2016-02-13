@@ -319,8 +319,9 @@ void DMA2_Channel1_IRQHandler (void){
 
       DMA_Cmd(DMA2_Channel2, ENABLE);
       DMA_Cmd(DMA2_Channel1, ENABLE);
-*/
+
       SPI3_Buf->SPI3_Buf_Len=0;
+      */
                     
     }else{
       

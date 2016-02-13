@@ -355,7 +355,7 @@ void SetupSPI3(void){
  extern  uint16_t *spi3_dma_receive_buf_addr;
  extern  uint16_t *spi3_dma_transmit_buf_addr;
 
-void Setup_DMA_SPI3(void){
+void Setup_DMA_SPI3(){
   DMA_InitTypeDef DMA_SPI_InitStructure;
   
   RCC_AHBPeriphClockCmd (RCC_AHBPeriph_DMA2,ENABLE);
