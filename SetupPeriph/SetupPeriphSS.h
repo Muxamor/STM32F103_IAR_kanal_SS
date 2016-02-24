@@ -44,6 +44,7 @@ void SetupSPI1(void);
 void SetupSPI2(void);
 void SetupSPI3(void);
 void Setup_DMA_SPI3(void);
+void ReSetup_SPI3_DMA_SPI3(uint16_t * addr_buf_Tx, uint16_t * addr_buf_Rx, uint32_t size_data_Tx, uint32_t size_data_Rx);
 void SetupTimers(void);
 void Setup_RTC(void);
 void Setup_I2C(void);

@@ -13,4 +13,6 @@ extern _UARTBUF *UART_Buf;
 
 extern _SPI3BUF *SPI3_Buf;
 
+extern _FIFO_BUF_DATA   *FIFO_BUF;
+
 #endif

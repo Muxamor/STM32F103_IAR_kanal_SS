@@ -149,6 +149,7 @@ void SysTick_Handler(void){
 
 //extern _INTERRUPTMONITOR *Interrupt_Monitor;
 //extern _SETTINGSOFCHANNEL  *Settings_Of_Channel;
+//extern _FIFO_BUF_DATA *FIFO_BUF;
 /**
   * @brief  This function handles  RTC evry one second interrupt request.
   * @param  None
@@ -158,15 +159,18 @@ void RTC_IRQHandler(void){
   
   if( RTC_GetITStatus(RTC_IT_SEC) != RESET ){
        
-
-      if(Settings_Of_Channel->time_test_LED==0) {
-      LED_GREEN_ON();
-      Settings_Of_Channel->time_test_LED=1;
-      } else {
-      LED_GREEN_OFF();
-      Settings_Of_Channel->time_test_LED=0;
+      if(FIFO_BUF->state_after_stop==1){
+        NVIC_EnableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */  /// Попроверки бита после команды стоп вкулючить 
+      }
+      FIFO_BUF->next_second_get = 1;
       
-       }
+      if(Settings_Of_Channel->time_test_LED==0) {
+        LED_GREEN_ON();
+        Settings_Of_Channel->time_test_LED=1;
+      } else {
+        LED_GREEN_OFF();
+        Settings_Of_Channel->time_test_LED=0;
+      }
     
     
        

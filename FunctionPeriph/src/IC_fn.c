@@ -483,12 +483,12 @@ u8 Set_Settings_Fres(u8 t, _SETTINGSOFCHANNEL *channel_settings){
       channel_settings->Frequency_software_decimation_count=64;
       channel_settings->Frequency_software_decimation_count_down=64;
       break;
-      
+   
       default:
       return 1;
   }
  
-  channel_settings->Frequency_sampling_data_flow = channel_settings->Frequency_sampling_value / channel_settings->Frequency_software_decimation_count;
+    channel_settings->Frequency_sampling_data_flow = channel_settings->Frequency_sampling_value / channel_settings->Frequency_software_decimation_count;
   return 0;
 
 
@@ -520,16 +520,15 @@ u8 Set_Default_Settings(_SETTINGSOFCHANNEL *channel_settings){
    // stop read ADC
    channel_settings->Start_stop=0;
    // Freq sampling =0 -- show all counts
-   channel_settings->Frequency_sampling=0;
-   channel_settings->Frequency_sampling_value=64;
-   channel_settings->Frequency_software_decimation=0;
-   channel_settings->Frequency_software_decimation_count=1;//Fres
-   channel_settings->Frequency_software_decimation_count_down=1;//Fres
+   channel_settings->Frequency_sampling=6; //all the time 
+   channel_settings->Frequency_sampling_value=4096;//all the time
+   channel_settings->Frequency_software_decimation=32;
+   channel_settings->Frequency_software_decimation_count=32;//Fres
+   channel_settings->Frequency_software_decimation_count_down=32;//Fres
    channel_settings->Frequency_sampling_data_flow = (channel_settings->Frequency_sampling_value)/(channel_settings->Frequency_software_decimation_count);
    //SPI port to send data from ADC
    channel_settings->Port_to_send_data_SPI3_or_UART=0;
-   
-  
+
     return 0;   
    
 }

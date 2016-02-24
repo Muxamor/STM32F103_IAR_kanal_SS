@@ -47,6 +47,9 @@ typedef struct{
 
  typedef struct{
   u8 Numer_of_Channel;
+  u8 SID_number_channel;
+  u16 Serial_number_unit;
+  u16 KEMS_of_channel;
   u8 Aplification_factor_1;
   u8 Aplification_factor_2;
   u8 Frequency_cut_off;
@@ -62,20 +65,13 @@ typedef struct{
   u32 Saturation_Level_Af2_plus;
   u32 Saturation_Level_Af2_minus;
   
-  
   u8 Control_Minus_Saturation_level_Af1;
   u8 Control_Minus_Saturation_level_Af2;
   u8 Port_to_send_data_SPI3_or_UART;
   u8 Start_stop;
   
-  
   u8 time_test_LED;
-  
-  u8 SID_number_of_channel;
-  u16 KEMS_off_channel;
-  
-  
-} _SETTINGSOFCHANNEL;
+}_SETTINGSOFCHANNEL;
 
 
 
@@ -93,8 +89,16 @@ typedef struct{
 
 typedef struct{
 
-  u16 number_packets;
-  u16 number_seconds;
+  u16 number_packet;
+  
+  u8 data_month;
+  u8 data_day;
+  u16 data_yaer;
+  u8 date_minute;
+  u8 date_hour;
+  u16 date_second;
+  
+  u32 number_second;
   u16 serial_number_unit;
   
   u8  SID_number_channel;
@@ -134,12 +138,16 @@ typedef struct{
   u8 read_fifo;
     
   u8 new_circle:1;  // new circle in FIFO buffer
-  u8 miss_parsel:1; //miss parcel 
- // u8 new_data_packets:1; // =1 new parsel 0= old parsel
-  u8:6;
+  u8 permit_read_ADC24:1; // =1 new parsel 0= old parsel
+  u8 next_second_get:1;
+  u8 state_after_stop:1;
+  u8 miss_parsel:1;
+  u8 :5;
   
   u8 quant_paresl_ready_send;        
   u16 count_data_written_per_buf;
+  u16 quant_pakets;
+  u32 quant_seconds;
               
 }_FIFO_BUF_DATA;
 
@@ -168,6 +176,10 @@ enum Command_from_BB {Write_Input_Switch_command=0x01,
                       Read_ID_Channel_number=0x14,
                       Write_SID_Channel_number=0x15,
                       Read_SID_Channel_number=0x16,
+                      Write_Serial_number_unit=0x19,
+                      Read_Serial_number_unit=0x1A,
+                      Write_KEMS_channel=0x1B,
+                      Read_KEMS_channel=0x1C,
                       
                       Read_Ready_command=0x20,
                       START_STOP_command=0x21,

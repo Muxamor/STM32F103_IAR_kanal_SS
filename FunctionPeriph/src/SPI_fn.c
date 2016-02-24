@@ -127,7 +127,7 @@ void SPI3_Sent_Response_to_BB( u16 *data, u16 length,_SPI3BUF* SPI3_Buf_Trunsmit
   * @param  None
   * @retval None
   */
-void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_channel, _INTERRUPTMONITOR *interrupt){
+void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_channel, _INTERRUPTMONITOR *interrupt, _FIFO_BUF_DATA *FIFObuf){
    
  //  SPI_I2S_ITConfig(SPI3, SPI_I2S_IT_RXNE, DISABLE);
  // DMA_Cmd(DMA2_Channel2, DISABLE);
@@ -156,13 +156,24 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
       if(Value_of_settings==0x01){
         
         settings_channel->Start_stop=1;//Start
-        NVIC_EnableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
+       // NVIC_EnableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
         Send_OK_answer=1;
         
       }else if(Value_of_settings==0x04){
         
         settings_channel->Start_stop=0;//STOP
         NVIC_DisableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
+        FIFObuf->write_fifo = 0;
+        FIFObuf->read_fifo = 0;   
+        FIFObuf->new_circle = 0;
+        FIFObuf->count_data_written_per_buf = 0;
+        FIFObuf->quant_paresl_ready_send = 0;
+        FIFObuf->quant_pakets = 0;
+        FIFObuf->quant_seconds = 0;
+        FIFObuf->next_second_get = 0;
+        FIFObuf->state_after_stop = 1;
+        FIFObuf->permit_read_ADC24 = 0;
+        FIFObuf->miss_parsel = 0;
         Send_OK_answer=1;
         
       }else {
@@ -240,7 +251,7 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             ask_buf[3]=00;
             length=2;
           break;
-      
+      /*
         case Write_Sampling_Frequency_fd_command://Frequency_sampling or Frequency_descritisation  get and set settings
           if(Set_Settings_FD(Value_of_settings,settings_channel ) == 1){
             Error_happened=1;
@@ -256,7 +267,7 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             ask_buf[3]=00;
             length=2;
           break;
-        
+        */
         default:
           Error_happened=1;
       }
@@ -353,15 +364,42 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             break;
             
           case Write_SID_Channel_number:
-            if(Value_of_settings==0x80){
-              //дописать функцию записи SID во флэш
-              Send_OK_answer=1;
-            }else {
-              Error_happened=1;
-            }
+            settings_channel->SID_number_channel =(u8)Value_of_settings_2;
+            Send_OK_answer=1;
             break;
+            
           case Read_SID_Channel_number:
-            //дописать функцию чтения из флэш SID
+            ask_buf[0]=(u8)Read_SID_Channel_number;
+            ask_buf[1]=settings_channel->SID_number_channel;
+            ask_buf[2]=00;
+            ask_buf[3]=00;
+            length=2;
+            break;
+            
+          case Write_Serial_number_unit:
+            settings_channel->Serial_number_unit = Value_of_settings_2;
+            Send_OK_answer=1;
+            break;
+            
+          case Read_Serial_number_unit:
+            ask_buf[0]=(u8)Read_Serial_number_unit;
+            ask_buf[1]= 0x00;
+            ask_buf[2]=(u8)settings_channel->Serial_number_unit;
+            ask_buf[3]=(u8)(settings_channel->Serial_number_unit>>8);
+            length=2;
+            break;
+            
+          case Write_KEMS_channel:
+            settings_channel->KEMS_of_channel = Value_of_settings_2;
+            Send_OK_answer=1;
+            break;
+            
+          case Read_KEMS_channel:
+            ask_buf[0]=(u8)Read_KEMS_channel;
+            ask_buf[1]= 0x00;
+            ask_buf[2]=(u8)settings_channel->KEMS_of_channel;
+            ask_buf[3]=(u8)(settings_channel->KEMS_of_channel>>8);
+            length=2;
             break;
             
           case Read_Ready_command:
