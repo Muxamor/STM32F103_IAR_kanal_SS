@@ -36,22 +36,19 @@ void main(){
   SetupSPI2();
   SetupSPI3();
   SetupTimers();
-  Setup_RTC(); 
+  Setup_RTC();
   SetupInterrupt();
   
- // Setup_IWDG();
+  //Setup_IWDG();
   //RCC_GetClocksFreq(CLlock_get);//для проверки настроенной частоты
   
-  SPI3_Buf->SPI3TransmitBuf[0] = 0x1111;
-  SPI3_Buf->SPI3TransmitBuf[1] = 0xCCCC;
-
   Setup_DMA_SPI3();
   
   SPI3_Buf->SPI3TransmitBuf[0] = 0xAAAA;
-  SPI3_Buf->SPI3TransmitBuf[1] = 0xDD33;
+ SPI3_Buf->SPI3TransmitBuf[1] = 0x5533;
   
-  ReSetup_SPI3_DMA_SPI3(SPI3_Buf->SPI3TransmitBuf, SPI3_Buf->SPI3ReciveBuf, 2, 2);
-  
+  //ReSetup_SPI3_DMA_SPI3(SPI3_Buf->SPI3TransmitBuf, SPI3_Buf->SPI3ReciveBuf, 2, 2);
+ 
   /*
   SPI3_INT_BB_ON();
   SPI3_INT_BB_OFF();*/
@@ -64,15 +61,17 @@ void main(){
   FIFO_BUF->fifo_bufADC24[0].data_yaer = 0x7E0;
   FIFO_BUF->fifo_bufADC24[0].date_hour = 0x0E;
   FIFO_BUF->fifo_bufADC24[0].date_minute = 0x12;
-  FIFO_BUF->fifo_bufADC24[0].date_second = 0x37;
-  FIFO_BUF->fifo_bufADC24[0].number_second = 0x3004;
+  FIFO_BUF->fifo_bufADC24[0].date_second = 0x6008;
+  FIFO_BUF->quant_seconds = 0x40025006;
+  FIFO_BUF->fifo_bufADC24[0].number_second_big = (uint16_t)(FIFO_BUF->quant_seconds >> 16);
+  FIFO_BUF->fifo_bufADC24[0].number_second_littel = (uint16_t)FIFO_BUF->quant_seconds;
   FIFO_BUF->fifo_bufADC24[0].serial_number_unit = 0x4004; //Serial number of sesmic station
   FIFO_BUF->fifo_bufADC24[0].number_channel = 0x22;//Settings_Of_Channel->Numer_of_Channel;
   FIFO_BUF->fifo_bufADC24[0].SID_number_channel= 0x33;//Settings_Of_Channel->SID_number_of_channel;
   FIFO_BUF->fifo_bufADC24[0].value_Fcut = 0x44; //Settings_Of_Channel->Frequency_cut_off;
   FIFO_BUF->fifo_bufADC24[0].value_Fd = 0x55;//Settings_Of_Channel->Frequency_sampling;
   FIFO_BUF->fifo_bufADC24[0].value_Fdata = 0x5004;//Settings_Of_Channel->Frequency_sampling_data_flow;
-  FIFO_BUF->fifo_bufADC24[0].input_coordinates = 0x22; //Settings_Of_Channel->Switching_input;
+  FIFO_BUF->fifo_bufADC24[0].input_switch = 0x22; //Settings_Of_Channel->Switching_input;
   FIFO_BUF->fifo_bufADC24[0].input_directon_X_Y_Z = 0x33;
   FIFO_BUF->fifo_bufADC24[0].KEMS_channel = 0x6004; // //Settings_Of_Channel->KEMS_off_channel;
   FIFO_BUF->fifo_bufADC24[0].error_flug = 0x01;
@@ -95,6 +94,9 @@ void main(){
   FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[1].ADC24_data1 = 0x03;
   FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[1].ADC24_data0 = 0x04;
   
+  ReSetup_SPI3_DMA_SPI3((uint16_t*)(&(FIFO_BUF->fifo_bufADC24[0])), SPI3_Buf->SPI3ReciveBuf, 2048, 2);
+ 
+ 
 //Default setting for FIFO buffer.
   FIFO_BUF->write_fifo = 0;
   FIFO_BUF->read_fifo = 0;   
@@ -107,7 +109,8 @@ void main(){
   FIFO_BUF->state_after_stop = 1;
   FIFO_BUF->permit_read_ADC24 = 0;
   FIFO_BUF->miss_parsel = 0;
-
+  FIFO_BUF->parsel_ready_interrupt = 0;
+  FIFO_BUF->transmite_parsel_ENABLE = 0;
 
  /*-------------------------------Program-------------------------------------*/
   Settings_Of_Channel->Numer_of_Channel = Read_Number_of_Channel(); 
@@ -131,9 +134,9 @@ void main(){
   UART_SendString(UART4, "\n>");
   
   LED_RED_OFF();
-  Settings_Of_Channel->time_test_LED=0;
   LED_YELLOW_OFF(); 
   LED_GREEN_OFF();
+  Settings_Of_Channel->time_test_LED=0;
   
   uint8_t data0_ADC,data1_ADC,data2_ADC;
 
@@ -168,7 +171,6 @@ void main(){
         FIFO_BUF->write_fifo++; 
       }
       
-      FIFO_BUF->state_after_stop = 0;
       FIFO_BUF->count_data_written_per_buf=0;
       FIFO_BUF->miss_parsel = 0;
        
@@ -191,8 +193,12 @@ void main(){
       }else{
         
         FIFO_BUF->permit_read_ADC24 = 1;
-        FIFO_BUF->quant_paresl_ready_send++;
-          
+        
+        if( FIFO_BUF->state_after_stop == 0){
+          FIFO_BUF->quant_paresl_ready_send++;
+        } 
+        FIFO_BUF->state_after_stop = 0;
+        
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_packet = FIFO_BUF->quant_pakets;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_day = 0x1F; // date day 
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_month = 0x0C;// date month
@@ -200,14 +206,15 @@ void main(){
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_hour = 0x0E;//date hour
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_minute = 0x12;// date minute
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_second = 0x37;// date second
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_second = FIFO_BUF->quant_seconds;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_second_big = (uint16_t)(FIFO_BUF->quant_seconds >> 16);
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_second_littel = (uint16_t)FIFO_BUF->quant_seconds;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].serial_number_unit = 0x4004; //Serial number of sesmic station
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_channel = Settings_Of_Channel->Numer_of_Channel;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].SID_number_channel= 0x33;//Settings_Of_Channel->SID_number_of_channel;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fcut = 0x44; //Settings_Of_Channel->Frequency_cut_off;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fd = 0x55;//Settings_Of_Channel->Frequency_sampling;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fdata = 0x5004;//Settings_Of_Channel->Frequency_sampling_data_flow;
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].input_coordinates = 0x22; //Settings_Of_Channel->Switching_input;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].input_switch = 0x22; //Settings_Of_Channel->Switching_input;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].input_directon_X_Y_Z = 0x33;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].KEMS_channel = 0x6004; // //Settings_Of_Channel->KEMS_off_channel;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].error_flug = 0;
@@ -241,6 +248,11 @@ void main(){
       FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_ADC24_per_sec[FIFO_BUF->count_data_written_per_buf].ADC24_data1 = data1_ADC;
       FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_ADC24_per_sec[FIFO_BUF->count_data_written_per_buf].ADC24_data0 = data0_ADC;
       FIFO_BUF->count_data_written_per_buf++;
+    }
+    
+    if(FIFO_BUF->quant_paresl_ready_send != 0 && FIFO_BUF->parsel_ready_interrupt == 0 ){
+      FIFO_BUF->parsel_ready_interrupt=1;
+      SPI3_INT_BB_ON();
     }
     
          // Parse comman from UART

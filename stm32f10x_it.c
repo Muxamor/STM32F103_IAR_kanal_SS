@@ -179,6 +179,24 @@ void RTC_IRQHandler(void){
   }
 }
 
+/**
+  * @brief  This function fro Sync from BBB.
+  * @param  None
+  * @retval None
+  */
+void EXTI1_IRQHandler(void){
+  
+  if( EXTI_GetITStatus(EXTI_Line1) != RESET ){
+    EXTI_ClearITPendingBit(EXTI_Line1);
+    if(Settings_Of_Channel->Start_stop==1){
+      RTC_SetCounter(0);
+      RTC_WaitForLastTask();
+      NVIC_EnableIRQ(RTC_IRQn);
+    }
+  }
+  
+}
+
 
 
 /**
@@ -189,6 +207,7 @@ void RTC_IRQHandler(void){
 void EXTI0_IRQHandler(void){
   
   if( EXTI_GetITStatus(EXTI_Line0) != RESET ){
+    EXTI_ClearITPendingBit(EXTI_Line0);
     
     Settings_Of_Channel->Frequency_software_decimation_count_down--;
        
@@ -198,7 +217,7 @@ void EXTI0_IRQHandler(void){
     }
     
   }
-  EXTI_ClearITPendingBit(EXTI_Line0);
+  
 }
 
 
@@ -300,6 +319,21 @@ void DMA2_Channel2_IRQHandler (void){
   if(DMA_GetITStatus(DMA2_FLAG_TC2)==SET){
     
     DMA_ClearITPendingBit(DMA2_FLAG_TC2);
+    SPI3_INT_BB_OFF();
+    Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
+    
+    if( FIFO_BUF->transmite_parsel_ENABLE == 1){
+      ReSetup_SPI3_DMA_SPI3(SPI3_Buf->SPI3TransmitBuf, SPI3_Buf->SPI3ReciveBuf, 2, 2);    
+      FIFO_BUF->transmite_parsel_ENABLE = 0;
+      FIFO_BUF->parsel_ready_interrupt = 0;
+      FIFO_BUF->quant_paresl_ready_send--;
+      FIFO_BUF->read_fifo++; 
+       
+      if(FIFO_BUF->read_fifo == SIZE_FIFO_BUFFER){
+        FIFO_BUF->read_fifo = 0; 
+        FIFO_BUF->new_circle = 0;
+      }
+    }
       
   }
 }     
@@ -309,8 +343,8 @@ void DMA2_Channel1_IRQHandler (void){
   
   if(DMA_GetITStatus(DMA2_FLAG_TC1) == SET){
     DMA_ClearITPendingBit(DMA2_FLAG_TC1);
-    SPI3_INT_BB_OFF();
-    Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
+    //SPI3_INT_BB_OFF();
+    //Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
     
    
     if(SPI3_Buf->SPI3ReciveBuf[0]==0x0000){

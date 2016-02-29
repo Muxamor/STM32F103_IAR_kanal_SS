@@ -1,6 +1,8 @@
 #ifndef __STRUCTURE_H
 #define __STRUCTURE_H
 
+#define SIZE_HEAD_PAKETS 14
+
 // Endianess definitions
 
 #define REVERSE_LE_BE_u32(A) \
@@ -81,14 +83,14 @@ typedef struct{
   u8 factor_KU1:4;
   u8 factor_KU2:4;
   
-  u8 ADC24_data1;
   u8 ADC24_data0;
+  u8 ADC24_data1;
+ 
 
 }_ONECOUNTDATAADC24;
 
 
 typedef struct{
-
   u16 number_packet;
   
   u8 data_month;
@@ -98,7 +100,10 @@ typedef struct{
   u8 date_hour;
   u16 date_second;
   
-  u32 number_second;
+  
+  u16 number_second_big;
+  u16 number_second_littel;
+  
   u16 serial_number_unit;
   
   u8  SID_number_channel;
@@ -110,7 +115,7 @@ typedef struct{
   u16 value_Fdata;
   
   u8  input_directon_X_Y_Z;
-  u8  input_coordinates;
+  u8  input_switch;
   
   u16 KEMS_channel;
   
@@ -142,12 +147,15 @@ typedef struct{
   u8 next_second_get:1;
   u8 state_after_stop:1;
   u8 miss_parsel:1;
-  u8 :5;
+  u8 parsel_ready_interrupt:1; 
+  u8 transmite_parsel_ENABLE:1;
+  u8 :3;
   
   u8 quant_paresl_ready_send;        
   u16 count_data_written_per_buf;
   u16 quant_pakets;
   u32 quant_seconds;
+ 
               
 }_FIFO_BUF_DATA;
 
@@ -175,15 +183,18 @@ enum Command_from_BB {Write_Input_Switch_command=0x01,
                       Write_ID_Channel_number=0x13,
                       Read_ID_Channel_number=0x14,
                       Write_SID_Channel_number=0x15,
-                      Read_SID_Channel_number=0x16,
+                      Read_SID_Channel_number=0x16,         
                       Write_Serial_number_unit=0x19,
                       Read_Serial_number_unit=0x1A,
                       Write_KEMS_channel=0x1B,
                       Read_KEMS_channel=0x1C,
                       
                       Read_Ready_command=0x20,
-                      START_STOP_command=0x21,
+                      START_command=0x21,
+                      STOP_command=0x22,
                       
+                      Write_Read_dataADC24=0x24,
+                      Read_Stutus_channel=0x28,
                       Write_Software_Decimation_command=0x31,
                       Read_Software_Decimation_command=0x32,
                       Read_Frequenc_data_flow_command=0x34,

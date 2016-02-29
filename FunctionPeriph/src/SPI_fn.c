@@ -141,6 +141,7 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
    u8 ask_buf[4];
    u16 length;
    u16 tmp;
+   u8 miss_send_answer=0;
    
    
     tmp= SPI3_Buf_->SPI3ReciveBuf[0];
@@ -151,7 +152,7 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
     
     
     
-    if(Received_Command==START_STOP_command){
+    if(Received_Command==START_command){
       
       if(Value_of_settings==0x01){
         
@@ -159,9 +160,15 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
        // NVIC_EnableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
         Send_OK_answer=1;
         
-      }else if(Value_of_settings==0x04){
+      }else if(Value_of_settings==0x08){
         
-        settings_channel->Start_stop=0;//STOP
+      }else {
+        Error_happened=1;
+      }
+      
+    }else if(Received_Command==STOP_command){
+      
+       settings_channel->Start_stop=0;//STOP
         NVIC_DisableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
         FIFObuf->write_fifo = 0;
         FIFObuf->read_fifo = 0;   
@@ -174,11 +181,11 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
         FIFObuf->state_after_stop = 1;
         FIFObuf->permit_read_ADC24 = 0;
         FIFObuf->miss_parsel = 0;
-        Send_OK_answer=1;
+        FIFObuf->parsel_ready_interrupt = 0;
+        FIFObuf->transmite_parsel_ENABLE = 0;
         
-      }else {
-        Error_happened=1;
-      }
+        Send_OK_answer=1;
+        NVIC_DisableIRQ(RTC_IRQn);
       
     }else if( Received_Command <= 0 || Received_Command >= MAX_COMMAND ){
       
@@ -404,12 +411,23 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             
           case Read_Ready_command:
             ask_buf[0]=(u8)Read_Ready_command;
-            ask_buf[1]=0x80;
+            ask_buf[1]=0x80; 
             ask_buf[2]=00;
             ask_buf[3]=00;
             length=2;
             //пока не выроботон критерий готовности или не готовности канала отправлять всегда готов
             break;
+            
+            
+          case Write_Read_dataADC24://switch_buffers
+            ReSetup_SPI3_DMA_SPI3(((uint16_t*) (&(FIFObuf->fifo_bufADC24[FIFObuf->read_fifo]))), SPI3_Buf_->SPI3ReciveBuf, SIZE_HEAD_PAKETS + (settings_channel->Frequency_sampling_data_flow*2), 2);
+            FIFObuf->transmite_parsel_ENABLE = 1;
+            miss_send_answer=1;
+            SPI3_INT_BB_ON();
+            break;
+            
+             
+//Read_Stutus_channel=0x28,
                       
           case Write_Software_Decimation_command://
             if(Set_Settings_Fres(Value_of_settings,settings_channel ) == 1){
@@ -460,8 +478,9 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
       
     } 
      
-  
-    SPI3_Sent_Response_to_BB( (u16 *)ask_buf, length,SPI3_Buf_, interrupt );
+    if( miss_send_answer == 0){
+      SPI3_Sent_Response_to_BB( (u16 *)ask_buf, length,SPI3_Buf_, interrupt );
+    }
         
 }
 
