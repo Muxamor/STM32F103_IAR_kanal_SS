@@ -168,8 +168,11 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
       
     }else if(Received_Command==STOP_command){
       
-       settings_channel->Start_stop=0;//STOP
+        settings_channel->Start_stop=0;//STOP
+        
         NVIC_DisableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
+        NVIC_DisableIRQ(RTC_IRQn);
+        
         FIFObuf->write_fifo = 0;
         FIFObuf->read_fifo = 0;   
         FIFObuf->new_circle = 0;
@@ -185,7 +188,7 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
         FIFObuf->transmite_parsel_ENABLE = 0;
         
         Send_OK_answer=1;
-        NVIC_DisableIRQ(RTC_IRQn);
+        
       
     }else if( Received_Command <= 0 || Received_Command >= MAX_COMMAND ){
       
@@ -419,8 +422,8 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             break;
             
             
-          case Write_Read_dataADC24://switch_buffers
-            ReSetup_SPI3_DMA_SPI3(((uint16_t*) (&(FIFObuf->fifo_bufADC24[FIFObuf->read_fifo]))), SPI3_Buf_->SPI3ReciveBuf, SIZE_HEAD_PAKETS + (settings_channel->Frequency_sampling_data_flow*2), 2);
+          case Write_Read_dataADC24://switch_buffers 
+            ReSetup_SPI3_DMA_SPI3(((uint16_t*) (&(FIFObuf->fifo_bufADC24[FIFObuf->read_fifo]))),((uint16_t*) FIFObuf->rx_buff_service), SIZE_HEAD_PAKETS + (settings_channel->Frequency_sampling_data_flow*2), SIZE_HEAD_PAKETS + (settings_channel->Frequency_sampling_data_flow*2));
             FIFObuf->transmite_parsel_ENABLE = 1;
             miss_send_answer=1;
             SPI3_INT_BB_ON();

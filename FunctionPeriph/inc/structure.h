@@ -36,12 +36,12 @@ typedef struct{
 
  typedef struct{
    
-  u8 UART_Interrup                      :1;
-  u8 ADC_AD17_data_ready_interrupt      :1;
-  u8 SPI3_Interrup_TX_Buffer_Empty      :1;
-  u8 SPI3_Interrup_RX_Buffer_Get_Parcel :1;
-  u8 SPI3_Interrup_ERROR_Occurred       :1;
-  u8 :3;
+  u8 UART_Interrup                      ;//:1;
+  u8 ADC_AD17_data_ready_interrupt      ;//:1;
+  u8 SPI3_Interrup_TX_Buffer_Empty      ;//:1;
+  u8 SPI3_Interrup_RX_Buffer_Get_Parcel ;//:1;
+  u8 SPI3_Interrup_ERROR_Occurred       ;//:1;
+  //u8 :3;
 
   
 } _INTERRUPTMONITOR;
@@ -135,28 +135,29 @@ typedef struct{
               
               
 #define SIZE_FIFO_BUFFER 3
-
+  
 typedef struct{
               
   _PACKETDATAADC24 fifo_bufADC24[SIZE_FIFO_BUFFER];
+  
+  u16 rx_buff_service[8206];
   u8 write_fifo;
   u8 read_fifo;
-    
-  u8 new_circle:1;  // new circle in FIFO buffer
-  u8 permit_read_ADC24:1; // =1 new parsel 0= old parsel
-  u8 next_second_get:1;
-  u8 state_after_stop:1;
-  u8 miss_parsel:1;
-  u8 parsel_ready_interrupt:1; 
-  u8 transmite_parsel_ENABLE:1;
-  u8 :3;
   
+  u8 new_circle;//:1;  // new circle in FIFO buffer
+  u8 permit_read_ADC24;//:1; // =1 new parsel 0= old parsel
+  u8 next_second_get;//:1;
+  u8 state_after_stop;//:1;
+  u8 miss_parsel;//:1;
+  u8 parsel_ready_interrupt;//:1; 
+  u8 transmite_parsel_ENABLE;//:1;
+  u8 parsel_was_sended;
+
   u8 quant_paresl_ready_send;        
   u16 count_data_written_per_buf;
   u16 quant_pakets;
   u32 quant_seconds;
- 
-              
+
 }_FIFO_BUF_DATA;
 
 

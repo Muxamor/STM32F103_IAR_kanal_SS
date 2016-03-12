@@ -35,26 +35,19 @@ void main(){
   SetupSPI1();
   SetupSPI2();
   SetupSPI3();
+  
   SetupTimers();
   Setup_RTC();
   SetupInterrupt();
   
+  Setup_DMA_SPI3();
   //Setup_IWDG();
   //RCC_GetClocksFreq(CLlock_get);//для проверки настроенной частоты
   
-  Setup_DMA_SPI3();
   
-  SPI3_Buf->SPI3TransmitBuf[0] = 0xAAAA;
- SPI3_Buf->SPI3TransmitBuf[1] = 0x5533;
-  
-  //ReSetup_SPI3_DMA_SPI3(SPI3_Buf->SPI3TransmitBuf, SPI3_Buf->SPI3ReciveBuf, 2, 2);
- 
-  /*
-  SPI3_INT_BB_ON();
-  SPI3_INT_BB_OFF();*/
-    
- /*---------------------------Setup channels----------------------------------------*/   
 
+ /*---------------------------Setup channels----------------------------------------*/   
+/*
   FIFO_BUF->fifo_bufADC24[0].number_packet = 0x2004;
   FIFO_BUF->fifo_bufADC24[0].data_day = 0x1F;
   FIFO_BUF->fifo_bufADC24[0].data_month = 0x0C;
@@ -94,23 +87,48 @@ void main(){
   FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[1].ADC24_data1 = 0x03;
   FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[1].ADC24_data0 = 0x04;
   
-  ReSetup_SPI3_DMA_SPI3((uint16_t*)(&(FIFO_BUF->fifo_bufADC24[0])), SPI3_Buf->SPI3ReciveBuf, 2048, 2);
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[60].factor_KU1 = 0x1;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[60].factor_KU2 = 0x2;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[60].ADC24_data2 = 0x03;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[60].ADC24_data1 = 0x04;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[60].ADC24_data0 = 0x05;
+  
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[61].factor_KU1 = 0x3;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[61].factor_KU2 = 0x4;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[61].ADC24_data2 = 0x09;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[61].ADC24_data1 = 0x08;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[61].ADC24_data0 = 0x07;
+  
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[62].factor_KU1 = 0x3;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[62].factor_KU2 = 0x4;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[62].ADC24_data2 = 0x01;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[62].ADC24_data1 = 0x02;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[62].ADC24_data0 = 0x03;
+  
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[63].factor_KU1 = 0x8;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[63].factor_KU2 = 0x8;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[63].ADC24_data2 = 0x09;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[63].ADC24_data1 = 0x04;
+  FIFO_BUF->fifo_bufADC24[0].data_ADC24_per_sec[63].ADC24_data0 = 0x02;
+
+  ReSetup_SPI3_DMA_SPI3((uint16_t*)(&(FIFO_BUF->fifo_bufADC24[0])), SPI3_Buf->SPI3ReciveBuf, 142, 2);
  
- 
+ */
 //Default setting for FIFO buffer.
   FIFO_BUF->write_fifo = 0;
   FIFO_BUF->read_fifo = 0;   
   FIFO_BUF->new_circle = 0;
   FIFO_BUF->count_data_written_per_buf = 0;
   FIFO_BUF->quant_paresl_ready_send = 0;
-  FIFO_BUF->quant_pakets = 0;
-  FIFO_BUF->quant_seconds = 0;
+  FIFO_BUF->quant_pakets = 0x0;
+  FIFO_BUF->quant_seconds = 0x0;
   FIFO_BUF->next_second_get = 0;
   FIFO_BUF->state_after_stop = 1;
   FIFO_BUF->permit_read_ADC24 = 0;
   FIFO_BUF->miss_parsel = 0;
   FIFO_BUF->parsel_ready_interrupt = 0;
   FIFO_BUF->transmite_parsel_ENABLE = 0;
+  FIFO_BUF->parsel_was_sended=0;
 
  /*-------------------------------Program-------------------------------------*/
   Settings_Of_Channel->Numer_of_Channel = Read_Number_of_Channel(); 
@@ -135,10 +153,11 @@ void main(){
   
   LED_RED_OFF();
   LED_YELLOW_OFF(); 
-  LED_GREEN_OFF();
+  //LED_GREEN_OFF();
   Settings_Of_Channel->time_test_LED=0;
   
   uint8_t data0_ADC,data1_ADC,data2_ADC;
+
 
   while(1) {
     
@@ -154,11 +173,21 @@ void main(){
     if(Settings_Of_Channel->Start_stop==1 && FIFO_BUF->next_second_get ==1 && Settings_Of_Channel->Port_to_send_data_SPI3_or_UART==0){
       
       FIFO_BUF->next_second_get = 0;
-      NVIC_EnableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
-      
+
       if( FIFO_BUF->state_after_stop == 0){
-        FIFO_BUF->quant_pakets++;
-        FIFO_BUF->quant_seconds++;
+        
+        if(FIFO_BUF->quant_pakets == 0xFFFF){
+          FIFO_BUF->quant_pakets = 0;
+        }else{
+          FIFO_BUF->quant_pakets++;
+        }
+        
+        if(FIFO_BUF->quant_seconds == 0xFFFFFFFF){
+          FIFO_BUF->quant_seconds = 0;
+        }else{
+          FIFO_BUF->quant_seconds++;
+        }
+
       }
       
       if((FIFO_BUF->count_data_written_per_buf != Settings_Of_Channel->Frequency_sampling_data_flow) &&  (FIFO_BUF->miss_parsel == 0)){ //Parsel ready to sened. Prepare for new parcel
@@ -182,7 +211,7 @@ void main(){
       if(FIFO_BUF->new_circle == 1 && FIFO_BUF->write_fifo == FIFO_BUF->read_fifo  ){ //if buffer is FULL
         
         if( FIFO_BUF->write_fifo == 0 ){
-          FIFO_BUF->write_fifo = SIZE_FIFO_BUFFER;
+          FIFO_BUF->write_fifo = SIZE_FIFO_BUFFER-1;
           FIFO_BUF->new_circle = 0;
         }else{
           FIFO_BUF->write_fifo--;
@@ -200,8 +229,8 @@ void main(){
         FIFO_BUF->state_after_stop = 0;
         
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_packet = FIFO_BUF->quant_pakets;
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_day = 0x1F; // date day 
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_month = 0x0C;// date month
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_day = 0x00;//0x1F; // date day 
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_month = FIFO_BUF->quant_paresl_ready_send; //0x0C;// date month
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_yaer = 0x7E0;// date year
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_hour = 0x0E;//date hour
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_minute = 0x12;// date minute
@@ -222,7 +251,7 @@ void main(){
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].error_saturation_ADC24 = 0;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].flag_KU1 = 0;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].flag_KU2 = 0;
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].flag_no_correct_data = 1;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].flag_no_correct_data = 0;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].automatic_change_KU1_KU2 = 0; 
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].work_mode = 0;
       }           
@@ -245,9 +274,16 @@ void main(){
       FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_ADC24_per_sec[FIFO_BUF->count_data_written_per_buf].factor_KU1 = Settings_Of_Channel->Aplification_factor_1;
       FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_ADC24_per_sec[FIFO_BUF->count_data_written_per_buf].factor_KU2 = Settings_Of_Channel->Aplification_factor_2;
       FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_ADC24_per_sec[FIFO_BUF->count_data_written_per_buf].ADC24_data2 = data2_ADC;
-      FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_ADC24_per_sec[FIFO_BUF->count_data_written_per_buf].ADC24_data1 = data1_ADC;
-      FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_ADC24_per_sec[FIFO_BUF->count_data_written_per_buf].ADC24_data0 = data0_ADC;
+      FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_ADC24_per_sec[FIFO_BUF->count_data_written_per_buf].ADC24_data1 =  data1_ADC;
+      FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_ADC24_per_sec[FIFO_BUF->count_data_written_per_buf].ADC24_data0 =  data0_ADC;
       FIFO_BUF->count_data_written_per_buf++;
+      
+      if(FIFO_BUF->count_data_written_per_buf >= Settings_Of_Channel->Frequency_sampling_data_flow){ // переделать размер на запись лишнего отчета в  зовисимости от размера записи за секунду
+        
+        FIFO_BUF->count_data_written_per_buf = Settings_Of_Channel->Frequency_sampling_data_flow - 1;
+ 
+      }
+      
     }
     
     if(FIFO_BUF->quant_paresl_ready_send != 0 && FIFO_BUF->parsel_ready_interrupt == 0 ){
@@ -255,6 +291,22 @@ void main(){
       SPI3_INT_BB_ON();
     }
     
+    if(FIFO_BUF->parsel_was_sended==1){
+      ReSetup_SPI3_DMA_SPI3(SPI3_Buf->SPI3TransmitBuf, SPI3_Buf->SPI3ReciveBuf, 2, 2);  
+      FIFO_BUF->parsel_was_sended=0;
+      FIFO_BUF->transmite_parsel_ENABLE = 0;
+      FIFO_BUF->parsel_ready_interrupt = 0;
+      FIFO_BUF->quant_paresl_ready_send--;
+
+      FIFO_BUF->read_fifo =  FIFO_BUF->read_fifo+1;
+      if(FIFO_BUF->read_fifo == SIZE_FIFO_BUFFER){
+        FIFO_BUF->read_fifo = 0; 
+        FIFO_BUF->new_circle = 0;
+      }
+      
+    }
+    
+
          // Parse comman from UART
     if(Interrupt_Monitor->UART_Interrup==1){
       Interrupt_Monitor->UART_Interrup=0;

@@ -369,7 +369,7 @@ void Setup_DMA_SPI3(){
   DMA_SPI_InitStructure.DMA_M2M = DMA_M2M_Disable;
   
   DMA_Init(DMA2_Channel2, &DMA_SPI_InitStructure);
-  //NVIC_EnableIRQ( DMA2_Channel2_IRQn);
+ // NVIC_EnableIRQ( DMA2_Channel2_IRQn);
  // DMA_ITConfig(DMA2_Channel2, DMA_IT_TC, ENABLE);
   SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Tx, ENABLE);
  
@@ -448,8 +448,8 @@ void ReSetup_SPI3_DMA_SPI3(uint16_t * addr_buf_Tx, uint16_t * addr_buf_Rx, uint3
   DMA_SPI_InitStructure.DMA_M2M = DMA_M2M_Disable;
   
   DMA_Init(DMA2_Channel2, &DMA_SPI_InitStructure);
-  NVIC_EnableIRQ( DMA2_Channel2_IRQn);
-  DMA_ITConfig(DMA2_Channel2, DMA_IT_TC, ENABLE);
+ // NVIC_EnableIRQ( DMA2_Channel2_IRQn);
+ // DMA_ITConfig(DMA2_Channel2, DMA_IT_TC, ENABLE);
   SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Tx, ENABLE);
  
   
@@ -471,8 +471,8 @@ void ReSetup_SPI3_DMA_SPI3(uint16_t * addr_buf_Tx, uint16_t * addr_buf_Rx, uint3
   DMA_ITConfig(DMA2_Channel1, DMA_IT_TC, ENABLE);
   SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Rx, ENABLE);
   
-  DMA_SetCurrDataCounter(DMA2_Channel2,size_data_Tx); 
-  DMA_SetCurrDataCounter(DMA2_Channel1,size_data_Rx); 
+  //DMA_SetCurrDataCounter(DMA2_Channel2,size_data_Tx); 
+ // DMA_SetCurrDataCounter(DMA2_Channel1,size_data_Rx); 
 
   DMA_Cmd(DMA2_Channel2, ENABLE);
   DMA_Cmd(DMA2_Channel1, ENABLE);
@@ -658,25 +658,25 @@ void SetupInterrupt(void){
   
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_9;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
+  GPIO_InitStructure.GPIO_Mode  =  GPIO_Mode_IN_FLOATING;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   
   GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource9);
   
-  EXTI_Init_Struct.EXTI_Line = EXTI_Line1;
+  EXTI_Init_Struct.EXTI_Line = EXTI_Line9;
   EXTI_Init_Struct.EXTI_Mode = EXTI_Mode_Interrupt;
   EXTI_Init_Struct.EXTI_Trigger = EXTI_Trigger_Rising;
   EXTI_Init_Struct.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_Init_Struct);
   
-  NVCI_Init_Struct.NVIC_IRQChannel=EXTI1_IRQn; 
+  NVCI_Init_Struct.NVIC_IRQChannel=EXTI9_5_IRQn; 
   NVCI_Init_Struct.NVIC_IRQChannelPreemptionPriority=12;/*Set priority ¹12 from 0..15*/
   NVCI_Init_Struct.NVIC_IRQChannelSubPriority=0;
   NVCI_Init_Struct.NVIC_IRQChannelCmd= ENABLE;
   NVIC_Init(&NVCI_Init_Struct);
-  NVIC_DisableIRQ(EXTI1_IRQn);
-  
-  //NVIC_EnableIRQ(EXTI1_IRQn); /*Enable Interrupt  Sync signal from BBB  */ 
+ // NVIC_DisableIRQ(EXTI9_5_IRQn);
+   
+  NVIC_EnableIRQ(EXTI9_5_IRQn); /*Enable Interrupt  Sync signal from BBB  */ 
  
  /*----------------------------------------------------------------------------*/
   
@@ -704,7 +704,7 @@ void SetupInterrupt(void){
   NVIC_Init(&NVCI_Init_Struct);
   NVIC_DisableIRQ(EXTI0_IRQn);
   
-  //NVIC_EnableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
+ // NVIC_EnableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
  
  /*----------------------------------------------------------------------------*/
   

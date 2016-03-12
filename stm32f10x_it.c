@@ -158,24 +158,29 @@ void SysTick_Handler(void){
 void RTC_IRQHandler(void){
   
   if( RTC_GetITStatus(RTC_IT_SEC) != RESET ){
-       
+        
+    RTC_ClearITPendingBit(RTC_IT_SEC);
+    RTC_WaitForLastTask();
+    
       if(FIFO_BUF->state_after_stop==1){
-        NVIC_EnableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */  /// Попроверки бита после команды стоп вкулючить 
+        if( EXTI_GetITStatus(EXTI_Line0) != RESET ){
+          EXTI_ClearITPendingBit(EXTI_Line0);
+        }
+     
+        NVIC_EnableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
       }
+      
       FIFO_BUF->next_second_get = 1;
       
       if(Settings_Of_Channel->time_test_LED==0) {
-        LED_GREEN_ON();
+        LED_YELLOW_ON(); // LED_GREEN_ON();
         Settings_Of_Channel->time_test_LED=1;
       } else {
-        LED_GREEN_OFF();
+        LED_YELLOW_OFF(); 
         Settings_Of_Channel->time_test_LED=0;
       }
     
     
-       
-    RTC_ClearITPendingBit(RTC_IT_SEC);
-    RTC_WaitForLastTask();
   }
 }
 
@@ -184,14 +189,17 @@ void RTC_IRQHandler(void){
   * @param  None
   * @retval None
   */
-void EXTI1_IRQHandler(void){
+void EXTI9_5_IRQHandler(void){
   
-  if( EXTI_GetITStatus(EXTI_Line1) != RESET ){
-    EXTI_ClearITPendingBit(EXTI_Line1);
+  if( EXTI_GetITStatus(EXTI_Line9) != RESET ){
+    EXTI_ClearITPendingBit(EXTI_Line9);
     if(Settings_Of_Channel->Start_stop==1){
-      RTC_SetCounter(0);
+      RTC_WaitForLastTask();
+      RTC_ClearITPendingBit(RTC_IT_SEC);
+      RTC_SetCounter(0); // Пока не вижу необходимости обнулять счетчик
       RTC_WaitForLastTask();
       NVIC_EnableIRQ(RTC_IRQn);
+      
     }
   }
   
@@ -271,8 +279,8 @@ void UART4_IRQHandler(void){
   * @retval None
   */
 void SPI3_IRQHandler(void){
-  
-  
+  while(1);
+  /*
   if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_TXE)==SET){
       
     Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
@@ -303,7 +311,7 @@ void SPI3_IRQHandler(void){
     }
             
       
-   } /*else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_ERR)==SET){
+   }*/ /*else if(SPI_I2S_GetITStatus(SPI3, SPI_I2S_IT_ERR)==SET){
      ///Произошла ошибка
      Interrupt_Monitor-> SPI3_Interrup_ERROR_Occurred=1;
      
@@ -315,13 +323,14 @@ void SPI3_IRQHandler(void){
 
 //DMA_SPI3_TX
 void DMA2_Channel2_IRQHandler (void){
-  
+  while(1);
+  /*
   if(DMA_GetITStatus(DMA2_FLAG_TC2)==SET){
     
     DMA_ClearITPendingBit(DMA2_FLAG_TC2);
     SPI3_INT_BB_OFF();
     Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
-    
+
     if( FIFO_BUF->transmite_parsel_ENABLE == 1){
       ReSetup_SPI3_DMA_SPI3(SPI3_Buf->SPI3TransmitBuf, SPI3_Buf->SPI3ReciveBuf, 2, 2);    
       FIFO_BUF->transmite_parsel_ENABLE = 0;
@@ -335,7 +344,7 @@ void DMA2_Channel2_IRQHandler (void){
       }
     }
       
-  }
+  }*/
 }     
 
 //DMA_SPI3_RX
@@ -343,30 +352,35 @@ void DMA2_Channel1_IRQHandler (void){
   
   if(DMA_GetITStatus(DMA2_FLAG_TC1) == SET){
     DMA_ClearITPendingBit(DMA2_FLAG_TC1);
-    //SPI3_INT_BB_OFF();
-    //Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
+    SPI3_INT_BB_OFF();
+    Interrupt_Monitor->SPI3_Interrup_TX_Buffer_Empty=1;
     
-   
-    if(SPI3_Buf->SPI3ReciveBuf[0]==0x0000){
-      /*
-     DMA_Cmd(DMA2_Channel2, DISABLE);
-      DMA_Cmd(DMA2_Channel1, DISABLE);
-  
-      DMA_SetCurrDataCounter(DMA2_Channel2,2); 
-      DMA_SetCurrDataCounter(DMA2_Channel1,2); 
-
-      DMA_Cmd(DMA2_Channel2, ENABLE);
-      DMA_Cmd(DMA2_Channel1, ENABLE);
-
-      SPI3_Buf->SPI3_Buf_Len=0;
-      */
-                    
-    }else{
+    if(FIFO_BUF->transmite_parsel_ENABLE == 0){
       
-      Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=1; 
+      if(SPI3_Buf->SPI3ReciveBuf[0]==0x0000 ){
+      
+        DMA_Cmd(DMA2_Channel2, DISABLE);
+        DMA_Cmd(DMA2_Channel1, DISABLE);
+  
+        DMA_SetCurrDataCounter(DMA2_Channel2,2); 
+        DMA_SetCurrDataCounter(DMA2_Channel1,2); 
+
+        DMA_Cmd(DMA2_Channel2, ENABLE);
+        DMA_Cmd(DMA2_Channel1, ENABLE);
+      
+        SPI3_Buf->SPI3_Buf_Len=0;
+      }else{
+        Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=1; 
+      }
     
+    }else if(FIFO_BUF->transmite_parsel_ENABLE == 1){
+       FIFO_BUF->parsel_was_sended=1;
+      // ReSetup_SPI3_DMA_SPI3(SPI3_Buf->SPI3TransmitBuf, SPI3_Buf->SPI3ReciveBuf, 2, 2);  
+      
+    }else{
+    
+      while(1);
     }
-        
  
   }
 
