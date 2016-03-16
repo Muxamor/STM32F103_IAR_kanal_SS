@@ -185,7 +185,7 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
         FIFObuf->state_after_stop = 1;
         FIFObuf->permit_read_ADC24 = 0;
         FIFObuf->miss_parsel = 0;
-        FIFObuf->parsel_ready_interrupt = 0;
+       // FIFObuf->parsel_ready_interrupt = 0;
         FIFObuf->transmite_parsel_ENABLE = 0;
         
         Send_OK_answer=1;
@@ -420,8 +420,21 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             SPI3_INT_BB_ON();
             break;
             
-             
-//Read_Stutus_channel=0x28,
+          case Read_Stutus_channel:
+            if(FIFObuf->quant_paresl_ready_send == 0){
+              ask_buf[0] = 0x28;
+              ask_buf[1] = 0x00;
+              ask_buf[2] = 0x00;
+              ask_buf[3] = 0x00;
+            }else{
+             tmp = SIZE_HEAD_PAKETS + (settings_channel->Frequency_sampling_data_flow*2);
+             ask_buf[0] = 0x28;
+             ask_buf[1] = FIFObuf->quant_paresl_ready_send;
+             ask_buf[2] = (uint8_t)(tmp>>8);
+             ask_buf[3] = (uint8_t)tmp;
+            }
+            length=2;
+            break;
                       
           case Write_Software_Decimation_command://
             if(Set_Settings_Fres(Value_of_settings,settings_channel ) == 1){

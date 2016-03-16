@@ -126,7 +126,7 @@ void main(){
   FIFO_BUF->state_after_stop = 1;
   FIFO_BUF->permit_read_ADC24 = 0;
   FIFO_BUF->miss_parsel = 0;
-  FIFO_BUF->parsel_ready_interrupt = 0;
+ // FIFO_BUF->parsel_ready_interrupt = 0;
   FIFO_BUF->transmite_parsel_ENABLE = 0;
   FIFO_BUF->parsel_was_sended=0;
 
@@ -286,16 +286,16 @@ void main(){
       
     }
     
-    if(FIFO_BUF->quant_paresl_ready_send != 0 && FIFO_BUF->parsel_ready_interrupt == 0 ){
-      FIFO_BUF->parsel_ready_interrupt=1;
-      SPI3_INT_BB_ON();
-    }
+   // if(FIFO_BUF->quant_paresl_ready_send != 0 && FIFO_BUF->parsel_ready_interrupt == 0 ){
+     // FIFO_BUF->parsel_ready_interrupt=1;
+    //  SPI3_INT_BB_ON();
+    //}
     
     if(FIFO_BUF->parsel_was_sended==1){
       ReSetup_SPI3_DMA_SPI3(SPI3_Buf->SPI3TransmitBuf, SPI3_Buf->SPI3ReciveBuf, 2, 2);  
       FIFO_BUF->parsel_was_sended=0;
       FIFO_BUF->transmite_parsel_ENABLE = 0;
-      FIFO_BUF->parsel_ready_interrupt = 0;
+   //   FIFO_BUF->parsel_ready_interrupt = 0;
       FIFO_BUF->quant_paresl_ready_send--;
 
       FIFO_BUF->read_fifo =  FIFO_BUF->read_fifo+1;

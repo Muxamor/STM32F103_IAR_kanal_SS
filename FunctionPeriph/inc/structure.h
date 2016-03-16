@@ -150,7 +150,7 @@ typedef struct{
   u8 next_second_get;//:1;
   u8 state_after_stop;//:1;
   u8 miss_parsel;//:1;
-  u8 parsel_ready_interrupt;//:1; 
+  //u8 parsel_ready_interrupt;//:1; 
   u8 transmite_parsel_ENABLE;//:1;
   u8 parsel_was_sended;
 
