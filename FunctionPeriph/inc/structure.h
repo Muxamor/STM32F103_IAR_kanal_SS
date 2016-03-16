@@ -48,7 +48,7 @@ typedef struct{
 
 
  typedef struct{
-  u8 Numer_of_Channel;
+  u8 Number_of_Channel;
   u8 SID_number_channel;
   u16 Serial_number_unit;
   u16 KEMS_of_channel;
@@ -71,6 +71,7 @@ typedef struct{
   u8 Control_Minus_Saturation_level_Af2;
   u8 Port_to_send_data_SPI3_or_UART;
   u8 Start_stop;
+  u8 Got_Sync_START;
   
   u8 time_test_LED;
 }_SETTINGSOFCHANNEL;
@@ -190,8 +191,8 @@ enum Command_from_BB {Write_Input_Switch_command=0x01,
                       Write_KEMS_channel=0x1B,
                       Read_KEMS_channel=0x1C,
                       
-                      Read_Ready_command=0x20,
-                      START_command=0x21,
+                      //Read_Ready_command=0x20,
+                      START_Wait_Sync_command=0x20,
                       STOP_command=0x22,
                       
                       Write_Read_dataADC24=0x24,

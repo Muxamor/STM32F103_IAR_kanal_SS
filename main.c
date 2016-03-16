@@ -131,13 +131,13 @@ void main(){
   FIFO_BUF->parsel_was_sended=0;
 
  /*-------------------------------Program-------------------------------------*/
-  Settings_Of_Channel->Numer_of_Channel = Read_Number_of_Channel(); 
+  Settings_Of_Channel->Number_of_Channel = Read_Number_of_Channel(); 
     
   //IWDG_ReloadCounter();
   u8 str[100];
   UART_SendString(UART4, "*****************************************************************************");
   UART_SendString(UART4, "*                        KTIVT seismic station                              *");
-  sprintf((char *)str,   "*                        Number of Channel: %d                               *", Settings_Of_Channel->Numer_of_Channel);                   
+  sprintf((char *)str,   "*                        Number of Channel: %d                               *", Settings_Of_Channel->Number_of_Channel);                   
   UART_SendString(UART4, str);
   UART_SendString(UART4, "*                        Version: 0.0V Beta                                 *");
   UART_SendString(UART4, "*                            01.09.2014                                     *");
@@ -228,24 +228,25 @@ void main(){
         } 
         FIFO_BUF->state_after_stop = 0;
         
+
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_packet = FIFO_BUF->quant_pakets;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_day = 0x00;//0x1F; // date day 
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_month = FIFO_BUF->quant_paresl_ready_send; //0x0C;// date month
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_month = 0x0C;// date month
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_yaer = 0x7E0;// date year
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_hour = 0x0E;//date hour
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_minute = 0x12;// date minute
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_second = 0x37;// date second
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_second_big = (uint16_t)(FIFO_BUF->quant_seconds >> 16);
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_second_littel = (uint16_t)FIFO_BUF->quant_seconds;
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].serial_number_unit = 0x4004; //Serial number of sesmic station
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_channel = Settings_Of_Channel->Numer_of_Channel;
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].SID_number_channel= 0x33;//Settings_Of_Channel->SID_number_of_channel;
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fcut = 0x44; //Settings_Of_Channel->Frequency_cut_off;
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fd = 0x55;//Settings_Of_Channel->Frequency_sampling;
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fdata = 0x5004;//Settings_Of_Channel->Frequency_sampling_data_flow;
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].input_switch = 0x22; //Settings_Of_Channel->Switching_input;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].serial_number_unit = Settings_Of_Channel->Serial_number_unit; //Serial number of sesmic station
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_channel = Settings_Of_Channel->Number_of_Channel;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].SID_number_channel= Settings_Of_Channel->SID_number_channel;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fcut = Settings_Of_Channel->Frequency_cut_off;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fd = Settings_Of_Channel->Frequency_sampling;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fdata = Settings_Of_Channel->Frequency_sampling_data_flow;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].input_switch = Settings_Of_Channel->Switching_input;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].input_directon_X_Y_Z = 0x33;
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].KEMS_channel = 0x6004; // //Settings_Of_Channel->KEMS_off_channel;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].KEMS_channel = Settings_Of_Channel->KEMS_of_channel;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].error_flug = 0;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].error_saturation = 0;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].error_saturation_ADC24 = 0;
@@ -278,10 +279,9 @@ void main(){
       FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_ADC24_per_sec[FIFO_BUF->count_data_written_per_buf].ADC24_data0 =  data0_ADC;
       FIFO_BUF->count_data_written_per_buf++;
       
-      if(FIFO_BUF->count_data_written_per_buf >= Settings_Of_Channel->Frequency_sampling_data_flow){ // переделать размер на запись лишнего отчета в  зовисимости от размера записи за секунду
+      if(FIFO_BUF->count_data_written_per_buf >= Settings_Of_Channel->Frequency_sampling_data_flow){
         
         FIFO_BUF->count_data_written_per_buf = Settings_Of_Channel->Frequency_sampling_data_flow - 1;
- 
       }
       
     }

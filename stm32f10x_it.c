@@ -193,7 +193,8 @@ void EXTI9_5_IRQHandler(void){
   
   if( EXTI_GetITStatus(EXTI_Line9) != RESET ){
     EXTI_ClearITPendingBit(EXTI_Line9);
-    if(Settings_Of_Channel->Start_stop==1){
+    if(Settings_Of_Channel->Got_Sync_START==0){
+      Settings_Of_Channel->Got_Sync_START=1;
       RTC_WaitForLastTask();
       RTC_ClearITPendingBit(RTC_IT_SEC);
       RTC_SetCounter(0); // Пока не вижу необходимости обнулять счетчик

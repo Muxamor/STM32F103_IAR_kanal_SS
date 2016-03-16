@@ -152,25 +152,26 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
     
     
     
-    if(Received_Command==START_command){
-      
-      if(Value_of_settings==0x01){
-        
+    if(Received_Command==START_Wait_Sync_command){
+
+        EXTI_ClearITPendingBit(EXTI_Line9);
+        NVIC_EnableIRQ(EXTI9_5_IRQn); /*Enable Interrupt  Sync signal from BBB  */ 
+         
         settings_channel->Start_stop=1;//Start
-       // NVIC_EnableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
-        Send_OK_answer=1;
-        
-      }else if(Value_of_settings==0x08){
-        
-      }else {
-        Error_happened=1;
-      }
-      
+       // NVIC_EnableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */
+        ask_buf[0]=0x20;
+        ask_buf[1]=0x01;
+        ask_buf[2]=00;
+        ask_buf[3]=00;
+        length=2;
+
     }else if(Received_Command==STOP_command){
       
         settings_channel->Start_stop=0;//STOP
+        settings_channel->Got_Sync_START=0; 
         
-        NVIC_DisableIRQ(EXTI0_IRQn); /*Enable Interrupt for PB0 */ 
+        NVIC_DisableIRQ(EXTI9_5_IRQn); /*Disable Interrupt  Sync signal from BBB  */ 
+        NVIC_DisableIRQ(EXTI0_IRQn); /*Disable Interrupt for PB0 */ 
         NVIC_DisableIRQ(RTC_IRQn);
         
         FIFObuf->write_fifo = 0;
@@ -411,16 +412,6 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             ask_buf[3]=(u8)(settings_channel->KEMS_of_channel>>8);
             length=2;
             break;
-            
-          case Read_Ready_command:
-            ask_buf[0]=(u8)Read_Ready_command;
-            ask_buf[1]=0x80; 
-            ask_buf[2]=00;
-            ask_buf[3]=00;
-            length=2;
-            //пока не выроботон критерий готовности или не готовности канала отправлять всегда готов
-            break;
-            
             
           case Write_Read_dataADC24://switch_buffers 
             ReSetup_SPI3_DMA_SPI3(((uint16_t*) (&(FIFObuf->fifo_bufADC24[FIFObuf->read_fifo]))),((uint16_t*) FIFObuf->rx_buff_service), SIZE_HEAD_PAKETS + (settings_channel->Frequency_sampling_data_flow*2), SIZE_HEAD_PAKETS + (settings_channel->Frequency_sampling_data_flow*2));

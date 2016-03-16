@@ -519,6 +519,7 @@ u8 Set_Default_Settings(_SETTINGSOFCHANNEL *channel_settings){
    channel_settings->Frequency_cut_off=0;
    // stop read ADC
    channel_settings->Start_stop=0;
+   channel_settings->Got_Sync_START=0;
    // Freq sampling =0 -- show all counts
    channel_settings->Frequency_sampling=6; //all the time 
    channel_settings->Frequency_sampling_value=4096;//all the time

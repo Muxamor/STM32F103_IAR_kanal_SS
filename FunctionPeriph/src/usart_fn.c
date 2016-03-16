@@ -250,7 +250,7 @@ void uart_terminal_command(_UARTBUF *recive_buf, _SETTINGSOFCHANNEL *settings_ch
  
  if(print_settings==1){
     sprintf((char *)str,   "\n\r af1 %d  af2 %d  fcut %d  fd %d  swinput %d \n\r Number of channel: %d \n\r", 
-                  settings_channel->Aplification_factor_1, settings_channel->Aplification_factor_2, settings_channel->Frequency_cut_off, settings_channel->Frequency_sampling, settings_channel->Switching_input, settings_channel->Numer_of_Channel);
+                  settings_channel->Aplification_factor_1, settings_channel->Aplification_factor_2, settings_channel->Frequency_cut_off, settings_channel->Frequency_sampling, settings_channel->Switching_input, settings_channel->Number_of_Channel);
     UART_SendString(UART4, str );
     
     if( settings_channel->Port_to_send_data_SPI3_or_UART==0){

@@ -674,9 +674,9 @@ void SetupInterrupt(void){
   NVCI_Init_Struct.NVIC_IRQChannelSubPriority=0;
   NVCI_Init_Struct.NVIC_IRQChannelCmd= ENABLE;
   NVIC_Init(&NVCI_Init_Struct);
- // NVIC_DisableIRQ(EXTI9_5_IRQn);
+  NVIC_DisableIRQ(EXTI9_5_IRQn);
    
-  NVIC_EnableIRQ(EXTI9_5_IRQn); /*Enable Interrupt  Sync signal from BBB  */ 
+  //NVIC_EnableIRQ(EXTI9_5_IRQn); /*Enable Interrupt  Sync signal from BBB  */ 
  
  /*----------------------------------------------------------------------------*/
   
