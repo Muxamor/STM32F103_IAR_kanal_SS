@@ -391,12 +391,11 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             settings_channel->Serial_number_unit = Value_of_settings_2;
             Send_OK_answer=1;
             break;
-            
           case Read_Serial_number_unit:
             ask_buf[0]=(u8)Read_Serial_number_unit;
             ask_buf[1]= 0x00;
-            ask_buf[2]=(u8)settings_channel->Serial_number_unit;
-            ask_buf[3]=(u8)(settings_channel->Serial_number_unit>>8);
+            ask_buf[2]=(u8)(settings_channel->Serial_number_unit>>8);
+            ask_buf[3]=(u8)settings_channel->Serial_number_unit;
             length=2;
             break;
             
@@ -404,12 +403,11 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             settings_channel->KEMS_of_channel = Value_of_settings_2;
             Send_OK_answer=1;
             break;
-            
           case Read_KEMS_channel:
             ask_buf[0]=(u8)Read_KEMS_channel;
             ask_buf[1]= 0x00;
-            ask_buf[2]=(u8)settings_channel->KEMS_of_channel;
-            ask_buf[3]=(u8)(settings_channel->KEMS_of_channel>>8);
+            ask_buf[2]=(u8)(settings_channel->KEMS_of_channel>>8);
+            ask_buf[3]=(u8)settings_channel->KEMS_of_channel;
             length=2;
             break;
             
@@ -427,7 +425,7 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
               ask_buf[2] = 0x00;
               ask_buf[3] = 0x00;
             }else{
-             tmp = SIZE_HEAD_PAKETS + (settings_channel->Frequency_sampling_data_flow*2);
+             tmp = ((SIZE_HEAD_PAKETS + (settings_channel->Frequency_sampling_data_flow*2))*2);
              ask_buf[0] = 0x28;
              ask_buf[1] = FIFObuf->quant_paresl_ready_send;
              ask_buf[2] = (uint8_t)(tmp>>8);

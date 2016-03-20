@@ -239,7 +239,7 @@ void main(){
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_second_big = (uint16_t)(FIFO_BUF->quant_seconds >> 16);
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_second_littel = (uint16_t)FIFO_BUF->quant_seconds;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].serial_number_unit = Settings_Of_Channel->Serial_number_unit; //Serial number of sesmic station
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_channel = Settings_Of_Channel->Number_of_Channel;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_channel = Settings_Of_Channel->Number_of_Channel+1;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].SID_number_channel= Settings_Of_Channel->SID_number_channel;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fcut = Settings_Of_Channel->Frequency_cut_off;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fd = Settings_Of_Channel->Frequency_sampling;
