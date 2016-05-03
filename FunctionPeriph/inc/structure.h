@@ -50,12 +50,14 @@ typedef struct{
  typedef struct{
   u8 Number_of_Channel;
   u8 SID_number_channel;
+  u16 ID_number_channel;
   u16 Serial_number_unit;
   u16 KEMS_of_channel;
   u8 Aplification_factor_1;
   u8 Aplification_factor_2;
   u8 Frequency_cut_off;
   u8 Switching_input;
+  u8 Coordinate_XYZ;
   u8 Frequency_sampling;//Fd
   u16 Frequency_sampling_value;//Fd
   u8 Frequency_software_decimation;//Fres
@@ -66,6 +68,12 @@ typedef struct{
   u16 Saturation_Level_Af1_minus;
   u32 Saturation_Level_Af2_plus;
   u32 Saturation_Level_Af2_minus;
+  u8 Start_second;
+  u8 Start_minute;
+  u8 Start_hour;
+  u8 Start_day;
+  u8 Start_manth;
+  u16 Start_year;
   
   u8 Control_Minus_Saturation_level_Af1;
   u8 Control_Minus_Saturation_level_Af2;
@@ -197,9 +205,23 @@ enum Command_from_BB {Write_Input_Switch_command=0x01,
                       
                       Write_Read_dataADC24=0x24,
                       Read_Stutus_channel=0x28,
+                      Write_Coordinate_X_Y_Z =0x29,
+                      Read_Coordinate_X_Y_Z =0x30,
                       Write_Software_Decimation_command=0x31,
                       Read_Software_Decimation_command=0x32,
                       Read_Frequenc_data_flow_command=0x34,
+                      Write_Satrt_seconds=0x37,
+                      Read_Start_seconds=0x38,
+                      Write_Start_minutes=0x39,
+                      Read_Start_minutes=0x3A,
+                      Write_Start_hours=0x3B,
+                      Read_Start_hours=0x3C,
+                      Write_Start_day=0x3D,
+                      Read_Start_day=0x3E,
+                      Write_Start_century_month=0x3F,
+                      Read_Start_century_month=0x40,
+                      Write_Start_year=0x41,
+                      Read_Start_year=0x42,
                    
                       MAX_COMMAND
                       };

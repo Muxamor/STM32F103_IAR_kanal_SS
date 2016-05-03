@@ -10,6 +10,7 @@
 //} _SPI3RECIVEBUF ;
   
 void SPI_Send_Data_u16( SPI_TypeDef* SPIx, uint16_t Data );
+void SPI_Send_Data_u16_wait_send( SPI_TypeDef* SPIx, uint16_t Data );
 void SPI_Send_Data_u8( SPI_TypeDef* SPIx, uint8_t Data );
 uint16_t SPI_Receive_Data( SPI_TypeDef* SPIx);
 void SPI3_Sent_Response_to_BB( u16 *data, u16 length,_SPI3BUF* SPI3_Buf_Trunsmit, _INTERRUPTMONITOR *interrupt);

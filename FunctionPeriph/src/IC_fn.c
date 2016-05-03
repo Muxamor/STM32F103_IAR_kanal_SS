@@ -144,59 +144,60 @@ u8 Set_Settings_DA2(u8 t){
   CS_CS1_2_DA2_ON(); //select DA2
   CS_CS1_1_DA10_OFF();  
   CS_CS1_3_DA14_OFF();  
+  uint16_t tmp=0;
     
   switch(t){
     case 0:
-       /*Amplif. factor1 Af2=1: send to SPI 0x1FFF*/
-      SPI_Send_Data_u16(SPI2, 0x1FFF);
+       /*Amplif. factor2 Af2=1: send to SPI 0x1FFF*/
+      tmp = 0x1FFF;
       break;
     case 1:
-       /*Amplif. factor1 Af2=2: send to SPI 0x1800*/
-      SPI_Send_Data_u16(SPI2, 0x1800);
+       /*Amplif. factor2 Af2=2: send to SPI 0x1800*/
+      tmp = 0x1800;
       break;
     case 2:
-       /*Amplif. factor1 Af2=4: send to SPI 0x1400*/
-      SPI_Send_Data_u16(SPI2, 0x1400);
+       /*Amplif. factor2 Af2=4: send to SPI 0x1400*/
+      tmp = 0x1400;
       break;    
     case 3:
-       /*Amplif. factor1 Af2=8: send to SPI 0x1200*/
-      SPI_Send_Data_u16(SPI2, 0x1200);
+       /*Amplif. factor2 Af2=8: send to SPI 0x1200*/
+      tmp = 0x1200;
       break;
     case 4:
-       /*Amplif. factor1 Af2=16: send to SPI 0x1100*/
-      SPI_Send_Data_u16(SPI2, 0x1100);
+       /*Amplif. factor2 Af2=16: send to SPI 0x1100*/
+      tmp = 0x1100;
       break;
     case 5:
-       /*Amplif. factor1 Af2=32: send to SPI 0x1080*/
-      SPI_Send_Data_u16(SPI2, 0x1080);
+       /*Amplif. factor2 Af2=32: send to SPI 0x1080*/
+      tmp = 0x1080;
       break;
     case 6:
-       /*Amplif. factor1 Af2=64: send to SPI 0x1040*/
-      SPI_Send_Data_u16(SPI2, 0x1040);
+       /*Amplif. factor2 Af2=64: send to SPI 0x1040*/
+      tmp = 0x1040;
       break;
     case 7:
-       /*Amplif. factor1 Af2=128: send to SPI 0x1020*/
-      SPI_Send_Data_u16(SPI2, 0x1020);
+       /*Amplif. factor2 Af2=128: send to SPI 0x1020*/
+      tmp = 0x1020;
       break;
     case 8:
-       /*Amplif. factor1 Af2=256: send to SPI 0x1010*/
-      SPI_Send_Data_u16(SPI2, 0x1010);
+       /*Amplif. factor2 Af2=256: send to SPI 0x1010*/
+      tmp = 0x1010;
       break;
     case 9:
-       /*Amplif. factor1 Af2=512: send to SPI 0x1008*/
-      SPI_Send_Data_u16(SPI2, 0x1008);
+       /*Amplif. factor2 Af2=512: send to SPI 0x1008*/
+      tmp = 0x1008;
       break;
     case 10:
-       /*Amplif. factor1 Af2=1024: send to SPI 0x1004*/
-      SPI_Send_Data_u16(SPI2, 0x1004);
+       /*Amplif. factor2 Af2=1024: send to SPI 0x1004*/
+      tmp = 0x1004;
       break;
     case 11:
-       /*Amplif. factor1 Af2=2048: send to SPI 0x1002*/
-      SPI_Send_Data_u16(SPI2, 0x1002);
+       /*Amplif. factor2 Af2=2048: send to SPI 0x1002*/
+      tmp = 0x1002;
       break;
     case 12:
-       /*Amplif. factor1 Af2=4096: send to SPI 0x1001*/
-      SPI_Send_Data_u16(SPI2, 0x1001);
+       /*Amplif. factor2 Af2=4096: send to SPI 0x1001*/
+      tmp = 0x1001;
       break;
     default:
       CS_CS1_2_DA2_OFF();
@@ -205,6 +206,12 @@ u8 Set_Settings_DA2(u8 t){
       return 1;//Error
   }
   
+  
+  SPI_Send_Data_u16_wait_send(SPI2, tmp);
+  //Добавить ожидание конца преедачи! в функцию!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ // while ( SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY) == SET );
+ // delay_us(5);
+  //////////////////////////////////////////////////////////////////////////
   CS_CS1_2_DA2_OFF();
   CS_CS1_1_DA10_OFF();  
   CS_CS1_3_DA14_OFF(); 

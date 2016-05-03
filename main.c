@@ -20,7 +20,7 @@ _FIFO_BUF_DATA fifo_buffer , *FIFO_BUF = &fifo_buffer;
 
 
  
-void main(){ 
+  void main(){ 
   
 
  
@@ -219,7 +219,7 @@ void main(){
         FIFO_BUF->miss_parsel = 1;
         FIFO_BUF->permit_read_ADC24 = 0;
         
-      }else{
+      }else{ 
         
         FIFO_BUF->permit_read_ADC24 = 1;
         
@@ -230,12 +230,12 @@ void main(){
         
 
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_packet = FIFO_BUF->quant_pakets;
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_day = 0x00;//0x1F; // date day 
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_month = 0x0C;// date month
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_yaer = 0x7E0;// date year
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_hour = 0x0E;//date hour
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_minute = 0x12;// date minute
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_second = 0x37;// date second
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_day = Settings_Of_Channel->Start_day;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_month = Settings_Of_Channel->Start_manth;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].data_yaer = Settings_Of_Channel->Start_year;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_hour = Settings_Of_Channel->Start_hour;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_minute = Settings_Of_Channel->Start_minute;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].date_second = Settings_Of_Channel->Start_second;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_second_big = (uint16_t)(FIFO_BUF->quant_seconds >> 16);
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].number_second_littel = (uint16_t)FIFO_BUF->quant_seconds;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].serial_number_unit = Settings_Of_Channel->Serial_number_unit; //Serial number of sesmic station
@@ -245,7 +245,7 @@ void main(){
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fd = Settings_Of_Channel->Frequency_sampling;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].value_Fdata = Settings_Of_Channel->Frequency_sampling_data_flow;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].input_switch = Settings_Of_Channel->Switching_input;
-        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].input_directon_X_Y_Z = 0x33;
+        FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].input_directon_X_Y_Z = Settings_Of_Channel->Coordinate_XYZ;;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].KEMS_channel = Settings_Of_Channel->KEMS_of_channel;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].error_flug = 0;
         FIFO_BUF->fifo_bufADC24[FIFO_BUF->write_fifo].error_saturation = 0;

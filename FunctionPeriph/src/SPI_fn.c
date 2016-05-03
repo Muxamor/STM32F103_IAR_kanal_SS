@@ -35,6 +35,21 @@ void SPI_Send_Data_u16( SPI_TypeDef* SPIx, uint16_t Data ){
 
 }
 
+/**
+  * @brief  This function send data size of u16 to SPI and wait while parsel not be sent.
+  * @param  None
+  * @retval None
+  */
+void SPI_Send_Data_u16_wait_send( SPI_TypeDef* SPIx, uint16_t Data ){
+  
+  while ( SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_BSY) == SET );
+
+  SPI_I2S_SendData(SPIx, Data);
+  
+  while ( SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_BSY) == SET );
+
+}
+
 
 /** //!!!!!!!!!!!!!!!!!!!Проверить работает или нет !!!!!!!!!!!!!!!!!!!!!!!!!!
   * @brief  This function send data size of u8 to SPI .
@@ -187,7 +202,7 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
         FIFObuf->miss_parsel = 0;
        // FIFObuf->parsel_ready_interrupt = 0;
         FIFObuf->transmite_parsel_ENABLE = 0;
-        
+        LED_YELLOW_OFF(); 
         Send_OK_answer=1;
         
       
@@ -363,15 +378,15 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             break;
             
          case Write_ID_Channel_number:
-            if( Value_of_settings==0xF0) {
-              //дописать функцию записи ID во флэш
-              Send_OK_answer=1; 
-            } else {
-              Error_happened=1;
-            }
+            settings_channel->ID_number_channel =  Value_of_settings_2;
+            Send_OK_answer=1;
             break;
           case Read_ID_Channel_number:
-            //дописать функцию чтения из флэш ID
+            ask_buf[0]=(u8)Read_ID_Channel_number;
+            ask_buf[1]=settings_channel->ID_number_channel;
+            ask_buf[2]=00;
+            ask_buf[3]=00;
+            length=2;
             break;
             
           case Write_SID_Channel_number:
@@ -433,7 +448,24 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             }
             length=2;
             break;
-                      
+            
+          case  Write_Coordinate_X_Y_Z://switch_buffers 
+            if(Value_of_settings == 0 || Value_of_settings == 1 || Value_of_settings == 2 || Value_of_settings == 3  ){
+               settings_channel->Coordinate_XYZ = Value_of_settings;
+               Send_OK_answer=1;
+            }else{
+               Error_happened=1;
+            }
+            break;
+            
+          case Read_Coordinate_X_Y_Z:
+            ask_buf[0]=(u8)Read_Coordinate_X_Y_Z;
+            ask_buf[1]=settings_channel->Coordinate_XYZ;
+            ask_buf[2]=00;
+            ask_buf[3]=00;
+            length=2;
+            break;
+                 
           case Write_Software_Decimation_command://
             if(Set_Settings_Fres(Value_of_settings,settings_channel ) == 1){
               Error_happened=1;
@@ -458,6 +490,53 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             length=2;
             break;
             
+          case Write_Satrt_seconds:
+            settings_channel->Start_second = ((Value_of_settings >>4)*10) + (0x0F & Value_of_settings);
+            Send_OK_answer=1;
+            break;
+          case Read_Start_seconds:
+            Send_OK_answer=1; // Потом дописать полноценны ответ.
+            break;
+                
+          case Write_Start_minutes:
+            settings_channel->Start_minute = ((Value_of_settings >>4)*10) + (0x0F & Value_of_settings);
+            Send_OK_answer=1;
+            break;
+          case Read_Start_minutes:
+            Send_OK_answer=1; // Потом дописать полноценны ответ.
+            break;
+            
+          case Write_Start_hours:
+            settings_channel->Start_hour = ((Value_of_settings >>4)*10) + (0x0F & Value_of_settings);
+            Send_OK_answer=1;
+            break;
+          case Read_Start_hours:
+            Send_OK_answer=1; // Потом дописать полноценны ответ.
+            break;
+            
+          case Write_Start_day:
+            settings_channel->Start_day = ((Value_of_settings >>4)*10) + (0x0F & Value_of_settings);
+            break;
+          case Read_Start_day:
+            Send_OK_answer=1; // Потом дописать полноценны ответ.
+            break;
+            
+          case Write_Start_century_month:
+            settings_channel->Start_manth = (0x0F & Value_of_settings);
+             settings_channel->Start_year = (u16)(((Value_of_settings >>4)*100) + 2000);
+            break;
+          case Read_Start_century_month: 
+            Send_OK_answer=1; // Потом дописать полноценны ответ.
+            break;
+           
+          case Write_Start_year:
+            settings_channel->Start_year = settings_channel->Start_year + (((Value_of_settings >>4)*10) + (0x0F & Value_of_settings));
+            break;
+          case Read_Start_year: 
+            Send_OK_answer=1; // Потом дописать полноценны ответ.
+            break;
+            
+
             default:
               Error_happened=1;
         }         
