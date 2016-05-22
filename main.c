@@ -9,21 +9,15 @@
 #include "SPI_fn.h"
 #include "global_variables.h"
 
-
 _SPI3BUF  spi3_buf, *SPI3_Buf=&spi3_buf;
 _UARTBUF uart_buf, *UART_Buf=&uart_buf;
 _INTERRUPTMONITOR interrupt_monitor, *Interrupt_Monitor=&interrupt_monitor ;
 _SETTINGSOFCHANNEL settings_of_channel, *Settings_Of_Channel=&settings_of_channel; 
 // RCC_ClocksTypeDef clckcheck,  *CLlock_get=&clckcheck;//для проверки настроенной частоты
 
-_FIFO_BUF_DATA fifo_buffer , *FIFO_BUF = &fifo_buffer;
+_FIFO_BUF_DATA fifo_buffer , *FIFO_BUF = &fifo_buffer; 
 
-
- 
-  void main(){ 
-  
-
- 
+  void main(){  
  /*----------------------------Setup Periphery--------------------------------*/
   SetupClock();
   SetupLED();
@@ -44,8 +38,6 @@ _FIFO_BUF_DATA fifo_buffer , *FIFO_BUF = &fifo_buffer;
   //Setup_IWDG();
   //RCC_GetClocksFreq(CLlock_get);//для проверки настроенной частоты
   
-  
-
  /*---------------------------Setup channels----------------------------------------*/   
 /*
   FIFO_BUF->fifo_bufADC24[0].number_packet = 0x2004;
@@ -165,7 +157,7 @@ _FIFO_BUF_DATA fifo_buffer , *FIFO_BUF = &fifo_buffer;
     // Parse comman from BB board
     if(Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel==1){
       Interrupt_Monitor->SPI3_Interrup_RX_Buffer_Get_Parcel=0;
-      SPI3_command_from_BB(SPI3_Buf, Settings_Of_Channel, Interrupt_Monitor, FIFO_BUF );
+      SPI3_command_from_BB(SPI3_Buf, Settings_Of_Channel, Interrupt_Monitor, FIFO_BUF ); 
     }
     
     // Get data from ADC24 in the Start state 

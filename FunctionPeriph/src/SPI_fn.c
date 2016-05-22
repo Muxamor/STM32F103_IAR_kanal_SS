@@ -522,8 +522,8 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             break;
             
           case Write_Start_century_month:
-            settings_channel->Start_manth = (0x0F & Value_of_settings);
-             settings_channel->Start_year = (u16)(((Value_of_settings >>4)*100) + 2000);
+            settings_channel->Start_manth = (((0x10 & Value_of_settings)>>4)*10) + (0x0F & Value_of_settings);
+             settings_channel->Start_year = (u16)(((Value_of_settings >>6)*100) + 2000);
             break;
           case Read_Start_century_month: 
             Send_OK_answer=1; // Потом дописать полноценны ответ.
