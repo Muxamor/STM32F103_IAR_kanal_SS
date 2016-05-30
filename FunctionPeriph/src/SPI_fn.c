@@ -383,9 +383,9 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             break;
           case Read_ID_Channel_number:
             ask_buf[0]=(u8)Read_ID_Channel_number;
-            ask_buf[1]=settings_channel->ID_number_channel;
-            ask_buf[2]=00;
-            ask_buf[3]=00;
+            ask_buf[1]=0x00;
+            ask_buf[2]=(u8)(settings_channel->ID_number_channel>>8);
+            ask_buf[3]=(u8)(settings_channel->ID_number_channel);
             length=2;
             break;
             
@@ -516,6 +516,7 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
             
           case Write_Start_day:
             settings_channel->Start_day = ((Value_of_settings >>4)*10) + (0x0F & Value_of_settings);
+            Send_OK_answer=1;
             break;
           case Read_Start_day:
             Send_OK_answer=1; // Потом дописать полноценны ответ.
@@ -524,6 +525,7 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
           case Write_Start_century_month:
             settings_channel->Start_manth = (((0x10 & Value_of_settings)>>4)*10) + (0x0F & Value_of_settings);
              settings_channel->Start_year = (u16)(((Value_of_settings >>6)*100) + 2000);
+             Send_OK_answer=1;
             break;
           case Read_Start_century_month: 
             Send_OK_answer=1; // Потом дописать полноценны ответ.
@@ -531,6 +533,7 @@ void SPI3_command_from_BB(_SPI3BUF* SPI3_Buf_, _SETTINGSOFCHANNEL *settings_chan
            
           case Write_Start_year:
             settings_channel->Start_year = settings_channel->Start_year + (((Value_of_settings >>4)*10) + (0x0F & Value_of_settings));
+            Send_OK_answer=1;
             break;
           case Read_Start_year: 
             Send_OK_answer=1; // Потом дописать полноценны ответ.
